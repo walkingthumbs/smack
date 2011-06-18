@@ -34,8 +34,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * use than a {@link PacketListener} when you need to wait for a specific
  * result.<p>
  *
- * Each packet collector will queue up to 2^16 packets for processing before
- * older packets are automatically dropped.
+ * Each packet collector will queue up a configured number of packets for processing before
+ * older packets are automatically dropped.  The default number is retrieved by 
+ * {@link SmackConfiguration#getPacketCollectorSize()}.
  *
  * @see Connection#createPacketCollector(PacketFilter)
  * @author Matt Tucker
@@ -47,7 +48,7 @@ public class PacketCollector {
      * reached, older packets will be automatically dropped from the queue as
      * new packets are added.
      */
-    private static final int MAX_PACKETS = 65536;
+    private int maxPackets = SmackConfiguration.getPacketCollectorSize();
 
     private PacketFilter packetFilter;
     private LinkedList<Packet> resultQueue;
@@ -65,6 +66,19 @@ public class PacketCollector {
         this.conection = conection;
         this.packetFilter = packetFilter;
         this.resultQueue = new LinkedList<Packet>();
+    }
+
+    /**
+     * Creates a new packet collector. If the packet filter is <tt>null</tt>, then
+     * all packets will match this collector.
+     *
+     * @param conection the connection the collector is tied to.
+     * @param packetFilter determines which packets will be returned by this collector.
+     * @param maxSize the maximum number of packets that will be stored in the collector.
+     */
+    protected PacketCollector(Connection conection, PacketFilter packetFilter, int maxSize) {
+        this(conection, packetFilter);
+        maxPackets = maxSize;
     }
 
     /**
@@ -182,7 +196,7 @@ public class PacketCollector {
         }
         if (packetFilter == null || packetFilter.accept(packet)) {
             // If the max number of packets has been reached, remove the oldest one.
-            if (resultQueue.size() == MAX_PACKETS) {
+            if (resultQueue.size() == maxPackets) {
                 resultQueue.removeLast();
             }
             // Add the new packet.
