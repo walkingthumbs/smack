@@ -430,7 +430,7 @@ public class XMPPConnection extends Connection {
         saslAuthentication.init();
     }
 
-    public void disconnect(Presence unavailablePresence) {
+    public synchronized void disconnect(Presence unavailablePresence) {
         // If not connected, ignore this request.
         PacketReader packetReader = this.packetReader;
         PacketWriter packetWriter = this.packetWriter;
