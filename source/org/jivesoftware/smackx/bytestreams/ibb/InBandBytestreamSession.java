@@ -594,7 +594,8 @@ public class InBandBytestreamSession implements BytestreamSession {
          * Constructor.
          */
         public IBBOutputStream() {
-            this.buffer = new byte[byteStreamRequest.getBlockSize()];
+            int maximumBytesPerPacket = (byteStreamRequest.getBlockSize() / 4) *3;
+            this.buffer = new byte[maximumBytesPerPacket];
         }
 
         /**
