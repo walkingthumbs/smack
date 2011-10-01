@@ -26,8 +26,8 @@
 
     <!-- Smack Version -->
     <property name="version.major" value="3" />
-    <property name="version.minor" value="1" />
-    <property name="version.revision" value="0" />
+    <property name="version.minor" value="2" />
+    <property name="version.revision" value="1" />
     <property name="version.extra" value="" /> 
 
     <if>
