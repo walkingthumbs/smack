@@ -60,6 +60,7 @@ public class XMPPConnection extends Connection {
     String connectionID = null;
     private String user = null;
     private boolean connected = false;
+    private boolean socketClosed = false;
     /**
      * Flag that indicates if the user is currently authenticated with the server.
      */
@@ -357,10 +358,14 @@ public class XMPPConnection extends Connection {
 
     public boolean isConnected() {
         return connected;
-    }
+    }       
 
     public boolean isSecureConnection() {
         return isUsingTLS();
+    }
+    
+    public boolean isSocketClosed() {
+    	return socketClosed;
     }
 
     public boolean isAuthenticated() {
@@ -382,14 +387,13 @@ public class XMPPConnection extends Connection {
      */
     protected void shutdown(Presence unavailablePresence) {
         // Set presence to offline.
-    	if (packetWriter!=null){
+    	if (packetWriter != null){
     		packetWriter.sendPacket(unavailablePresence);
     	}
 
         this.setWasAuthenticated(authenticated);
-        authenticated = false;
-        connected = false;
-        
+        authenticated = false;        
+                
         if (packetReader!=null){
         	packetReader.shutdown();
         }
@@ -403,7 +407,16 @@ public class XMPPConnection extends Connection {
         catch (Exception e) {
             // Ignore.
         }
-
+        
+        socketClosed = true;
+        try {
+        	socket.close();
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        connected = false;
+        
+        
         // Close down the readers and writers.
         if (reader != null) {
             try {
@@ -420,6 +433,7 @@ public class XMPPConnection extends Connection {
             writer = null;
         }
 
+        // Make sure that the socket is really closed
         try {
             socket.close();
         }
@@ -538,6 +552,7 @@ public class XMPPConnection extends Connection {
             throw new XMPPException(errorMessage, new XMPPError(
                     XMPPError.Condition.remote_server_error, errorMessage), ioe);
         }
+        socketClosed = false;
         initConnection();
     }
 

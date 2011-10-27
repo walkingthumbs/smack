@@ -105,6 +105,13 @@ public class ConnectionConfiguration implements Cloneable {
 			ProxyInfo.forDefaultProxy());
     }
 	
+    /**
+     * 
+     */
+    protected ConnectionConfiguration() {
+      /* Does nothing */	
+    }
+    
 	/**
      * Creates a new ConnectionConfiguration for the specified service name 
      * with specified proxy.
@@ -180,7 +187,7 @@ public class ConnectionConfiguration implements Cloneable {
         init(host, port, host, proxy);
     }
 
-    private void init(String host, int port, String serviceName, ProxyInfo proxy) {
+    protected void init(String host, int port, String serviceName, ProxyInfo proxy) {
         this.host = host;
         this.port = port;
         this.serviceName = serviceName;

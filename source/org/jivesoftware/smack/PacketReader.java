@@ -26,7 +26,7 @@ import org.jivesoftware.smack.sasl.SASLMechanism.Challenge;
 import org.jivesoftware.smack.sasl.SASLMechanism.Failure;
 import org.jivesoftware.smack.sasl.SASLMechanism.Success;
 import org.jivesoftware.smack.util.PacketParserUtils;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
+//import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -135,7 +135,7 @@ class PacketReader {
                     listener.connectionClosed();
                 }
                 catch (Exception e) {
-                    // Cath and print any exception so we can recover
+                    // Catch and print any exception so we can recover
                     // from a faulty listener and finish the shutdown process
                     e.printStackTrace();
                 }
@@ -327,7 +327,7 @@ class PacketReader {
             } while (!done && eventType != XmlPullParser.END_DOCUMENT && thread == readerThread);
         }
         catch (Exception e) {
-            if (!done) {
+            if (!done && !connection.isSocketClosed()) {
                 // Close the connection and notify connection listeners of the
                 // error.
                 notifyConnectionError(e);
