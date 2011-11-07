@@ -21,8 +21,6 @@
 package org.jivesoftware.smack;
 
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.Connection.InterceptorWrapper;
-import org.jivesoftware.smack.Connection.ListenerWrapper;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -151,7 +149,9 @@ class PacketWriter {
         synchronized (queue) {
             queue.notifyAll();
         }
-        keepAliveThread.interrupt();
+        // Interrupt the keep alive thread if one was created
+        if (keepAliveThread != null)
+        	keepAliveThread.interrupt();
     }
 
     /**
