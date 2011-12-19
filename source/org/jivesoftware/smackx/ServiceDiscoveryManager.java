@@ -29,6 +29,8 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.Base64;
+import org.jivesoftware.smackx.entitycaps.CapsVerListener;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.CapsExtension;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
@@ -734,7 +736,8 @@ public class ServiceDiscoveryManager {
 
     public void setEntityCapsManager(EntityCapsManager manager) {
         capsManager = manager;
-        if(connection.getCapsNode()!=null && connection.getHost()!=null){
+        if (connection.getCapsNode() != null 
+        		&& connection.getHost() != null) {
         	capsManager.addUserCapsNode(connection.getHost(), connection.getCapsNode());
         }
         capsManager.addPacketListener(connection);

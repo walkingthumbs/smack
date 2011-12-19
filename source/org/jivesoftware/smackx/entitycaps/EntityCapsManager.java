@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jivesoftware.smackx;
+package org.jivesoftware.smackx.entitycaps;
 
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
@@ -26,16 +26,15 @@ import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.filter.PacketExtensionFilter;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.util.Base64;
+import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.provider.CapsExtensionProvider;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.CapsExtension;
 import org.jivesoftware.smackx.packet.DataForm;
 import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -55,6 +54,7 @@ public class EntityCapsManager {
     public static final String HASH_METHOD_CAPS = "SHA-1";
 
     private static String entityNode = "http://www.igniterealtime.org/projects/smack/";
+    private static EntityCapsPersistentCache persistentCache;
 
     /**
      * Map of (node, hash algorithm) -&gt; DiscoverInfo. 
@@ -91,6 +91,9 @@ public class EntityCapsManager {
         cleanupDicsoverInfo(info);
 
         caps.put(node, info);
+        
+        if (persistentCache != null)
+        	persistentCache.addDiscoverInfoByNodePersistent(node, info);
     }
 
     /**
@@ -101,7 +104,7 @@ public class EntityCapsManager {
      * @param node the entity caps node#ver
      */
     public void addUserCapsNode(String user, String node) {
-    	if(user!=null && node!=null){
+    	if (user != null && node != null) {
     		userCaps.put(user, node);
     	}
     }
@@ -248,7 +251,7 @@ public class EntityCapsManager {
         return s;
     }
 
-    void calculateEntityCapsVersion(DiscoverInfo discoverInfo,
+    public void calculateEntityCapsVersion(DiscoverInfo discoverInfo,
             String identityType,
             String identityName,
             DataForm extendedInfo) {
@@ -330,5 +333,12 @@ public class EntityCapsManager {
             // DEBUG
             //spam();
         }
+    }
+    
+    public static void setPersistentCache(EntityCapsPersistentCache cache) {
+    	if (persistentCache != null)
+    		throw new IllegalStateException("Entity Caps Persistent Cache was already set");
+    	persistentCache = cache;
+    	persistentCache.replay();
     }
 }
