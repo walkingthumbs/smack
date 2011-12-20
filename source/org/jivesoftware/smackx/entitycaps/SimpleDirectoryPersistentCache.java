@@ -1,6 +1,5 @@
 package org.jivesoftware.smackx.entitycaps;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +20,7 @@ public class SimpleDirectoryPersistentCache implements
 	
 	private File cacheDir;
 	
-	SimpleDirectoryPersistentCache(File cacheDir) {
+	public SimpleDirectoryPersistentCache(File cacheDir) {
 		if (!cacheDir.exists()) 
 			throw new IllegalStateException("Cache directory \"" + cacheDir + "\" does not exist");
 		if (!cacheDir.isDirectory())
