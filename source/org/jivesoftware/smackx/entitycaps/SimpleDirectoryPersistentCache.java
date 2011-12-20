@@ -66,9 +66,8 @@ public class SimpleDirectoryPersistentCache implements
 	}
 	
 	private static DiscoverInfo restoreInfoFromFile(File file) throws IOException {
-		DataInputStream dis = new DataInputStream(new FileInputStream(file));
 		Reader reader = new InputStreamReader(new FileInputStream(file));
-		MXParser parser;
+		XmlPullParser parser;
         try {
             parser = new MXParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
