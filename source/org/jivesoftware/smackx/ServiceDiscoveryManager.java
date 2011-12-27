@@ -28,7 +28,6 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
-import org.jivesoftware.smack.util.Base64;
 import org.jivesoftware.smackx.entitycaps.CapsVerListener;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 import org.jivesoftware.smackx.packet.CapsExtension;
@@ -37,10 +36,7 @@ import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.packet.DataForm;
 
 import java.util.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Manages discovery of services in XMPP entities. This class provides:
@@ -57,11 +53,9 @@ public class ServiceDiscoveryManager {
 
     private static String identityName = "Smack";
     private static String identityType = "pc";
-    private static String entityNode = "http://www.igniterealtime.org/projects/smack/";
     
     private static boolean cacheNonCaps=true;
 
-    private String currentCapsVersion = null;
     private boolean sendPresence = false;
     
     private Map<String,DiscoverInfo> nonCapsCache =

@@ -65,10 +65,12 @@ public class CapsExtension implements PacketExtension {
         this.hash = hash;
     }
 
-    /*<c xmlns='http://jabber.org/protocol/caps' 
-     hash='sha-1'
-     node='http://code.google.com/p/exodus'
-     ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>
+    /*
+     *  <c xmlns='http://jabber.org/protocol/caps' 
+     *  hash='sha-1'
+     *  node='http://code.google.com/p/exodus'
+     *  ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>
+     *  
      */
     public String toXML() {
         String xml = "<c xmlns='" + XMLNS + "' " +
