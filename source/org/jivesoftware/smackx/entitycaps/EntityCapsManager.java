@@ -193,7 +193,7 @@ public class EntityCapsManager {
             new AndFilter(
                     new PacketTypeFilter(Presence.class),
                     new PacketExtensionFilter(CapsExtension.NODE_NAME, CapsExtension.XMLNS));
-        connection.addPacketListener(new CapsPacketListener(), f);
+        connection.addPacketListener(new CapsPacketListener(this), f);
     }
 
     public void addCapsVerListener(CapsVerListener listener) {
@@ -213,22 +213,12 @@ public class EntityCapsManager {
         }
     }
 
-    /*public void spam() {
-        System.err.println("User nodes:");
-        for (Map.Entry<String,String> e : userCaps.entrySet()) {
-            System.err.println(" * " + e.getKey() + " -> " + e.getValue());
-        }
-
-        System.err.println("Caps versions:");
-        for (Map.Entry<String,DiscoverInfo> e : caps.entrySet()) {
-            System.err.println(" * " + e.getKey() + " -> " + e.getValue());
-        }
-    }*/
-
-    ///////////
-    //  Calculate Entity Caps Version String
-    ///////////
-
+    /**
+     * Calculate Entity Caps version string
+     * 
+     * @param capsString
+     * @return
+     */
     private static String capsToHash(String capsString) {
         try {
             MessageDigest md = MessageDigest.getInstance(HASH_METHOD_CAPS);
@@ -318,22 +308,6 @@ public class EntityCapsManager {
         currentCapsVersion = capsVersion;
         addDiscoverInfoByNode(getNode() + "#" + capsVersion, discoverInfo);
         notifyCapsVerListeners();
-    }
-
-    class CapsPacketListener implements PacketListener {
-
-        public void processPacket(Packet packet) {
-            CapsExtension ext =
-                (CapsExtension) packet.getExtension(CapsExtension.NODE_NAME, CapsExtension.XMLNS);
-
-            String nodeVer = ext.getNode() + "#" + ext.getVersion();
-            String user = packet.getFrom();
-
-            addUserCapsNode(user, nodeVer);
-            
-            // DEBUG
-            //spam();
-        }
     }
     
     public static void setPersistentCache(EntityCapsPersistentCache cache) {
