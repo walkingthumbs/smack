@@ -93,7 +93,8 @@ public class ServiceDiscoveryManager {
         this.connection = connection;
 
         // For every XMPPConnection, add one EntityCapsManager.
-        if (connection instanceof XMPPConnection) {
+        if (connection instanceof XMPPConnection
+        		&& ((XMPPConnection)connection).isEntityCapsEnabled()) {
             setEntityCapsManager(new EntityCapsManager());
             capsManager.addCapsVerListener(new CapsPresenceRenewer());
         }
@@ -166,7 +167,7 @@ public class ServiceDiscoveryManager {
      * remote entity. Enabled by default.
      */
     public static void setNonCapsCaching(boolean set){
-    	cacheNonCaps = true;
+    	cacheNonCaps = set;
     }
     
     /**
@@ -530,8 +531,7 @@ public class ServiceDiscoveryManager {
 
         if (info != null) {
             return info;
-        }
-        else {
+        } else {
             // If the caps node is known, use it in the request.
             String node = null;
 
@@ -540,10 +540,12 @@ public class ServiceDiscoveryManager {
                 node = capsManager.getNodeVersionByUser(entityID);
             }
 
-            //Check if we cached DiscoverInfo for nonCaps entity
-            if(cacheNonCaps && node==null && nonCapsCache.containsKey(entityID)){
-            	return nonCapsCache.get(entityID);
-            }
+			// Check if we cached DiscoverInfo for nonCaps entity
+			if (cacheNonCaps 
+					&& node == null
+					&& nonCapsCache.containsKey(entityID)) {
+				return nonCapsCache.get(entityID);
+			}
             // Discover by requesting from the remote client
             info = discoverInfo(entityID, node);
 
@@ -552,7 +554,7 @@ public class ServiceDiscoveryManager {
                 EntityCapsManager.addDiscoverInfoByNode(node, info);
             }
             // If this is a non caps entity store the discover in nonCapsCache map
-            else if(cacheNonCaps && node == null){
+            else if (cacheNonCaps && node == null) {
             	nonCapsCache.put(entityID, info);
             }
             return info;

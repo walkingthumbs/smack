@@ -61,6 +61,7 @@ public class ConnectionConfiguration implements Cloneable {
     private boolean expiredCertificatesCheckEnabled = false;
     private boolean notMatchingDomainCheckEnabled = false;
     private boolean isRosterVersioningAvailable = false;
+    private boolean enableEntityCaps = true;
     private String capsNode = null;
     private SSLContext customSSLContext;
 
@@ -743,6 +744,23 @@ public class ConnectionConfiguration implements Cloneable {
     
     void setRosterVersioningAvailable(boolean enabled){
     	isRosterVersioningAvailable = enabled;
+    }
+    
+    boolean isEntityCapsEnabled() {
+    	return enableEntityCaps;
+    }
+    
+    /**
+     * Enable or disable Entity Capabilities (XEP-115)
+     * http://xmpp.org/extensions/xep-0115.html
+     * 
+     * Only available on XMPPConnection
+     * default is enabled
+     * 
+     * @param enabled
+     */
+    void setEntityCaps(boolean enabled) {
+    	enableEntityCaps = enabled;
     }
     
     void setCapsNode(String node){
