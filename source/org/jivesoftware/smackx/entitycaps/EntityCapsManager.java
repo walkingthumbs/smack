@@ -18,8 +18,6 @@
 package org.jivesoftware.smackx.entitycaps;
 
 import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.AndFilter;
@@ -69,6 +67,7 @@ public class EntityCapsManager {
      * Map of Full JID -&gt; DiscoverInfo/null.
      * In case of c2s connection the key is formed as user@server/resource (resource is required)
      * In case of link-local connection the key is formed as user@host (no resource)
+     * In case of a server or component the key is formed as domain
      */
     private Map<String,String> userCaps =
         new ConcurrentHashMap<String,String>(); 
