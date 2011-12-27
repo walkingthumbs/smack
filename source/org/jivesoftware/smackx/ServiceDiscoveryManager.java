@@ -95,7 +95,7 @@ public class ServiceDiscoveryManager {
         // For every XMPPConnection, add one EntityCapsManager.
         if (connection instanceof XMPPConnection
         		&& ((XMPPConnection)connection).isEntityCapsEnabled()) {
-            setEntityCapsManager(new EntityCapsManager());
+            setEntityCapsManager(new EntityCapsManager(this));
             capsManager.addCapsVerListener(new CapsPresenceRenewer());
         }
 
@@ -191,9 +191,6 @@ public class ServiceDiscoveryManager {
         response.addIdentity(identity);
         // Add the registered features to the response
         synchronized (features) {
-            // Add Entity Capabilities (XEP-0115) feature node.
-            response.addFeature("http://jabber.org/protocol/caps");
-
             for (Iterator<String> it = getFeatures(); it.hasNext();) {
                 response.addFeature(it.next());
             }
@@ -251,7 +248,7 @@ public class ServiceDiscoveryManager {
             }
         });
 
-        // Intercept presence packages and add caps data when inteded.
+        // Intercept presence packages and add caps data when intended.
         // XEP-0115 specifies that a client SHOULD include entity capabilities
         // with every presence notification it sends.
         PacketFilter capsPacketFilter = new PacketTypeFilter(Presence.class);
@@ -739,7 +736,10 @@ public class ServiceDiscoveryManager {
         capsManager.addPacketListener(connection);
     }
 
-
+    /**
+     * Updates the Entity Capabilities Verification String
+     * if EntityCaps is enabled
+     */
     private void renewEntityCapsVersion() {
         // If a XMPPConnection is the managed one, see that the new
         // version is updated
@@ -786,11 +786,4 @@ public class ServiceDiscoveryManager {
             }
         }
     }
-
-
-   /* public static void spam() {
-        for (ServiceDiscoveryManager m : instances.values()) {
-            m.capsManager.spam();
-        }
-    }*/
 }

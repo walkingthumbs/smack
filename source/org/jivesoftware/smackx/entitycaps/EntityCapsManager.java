@@ -28,6 +28,7 @@ import org.jivesoftware.smack.filter.PacketExtensionFilter;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.util.Base64;
 import org.jivesoftware.smackx.FormField;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.provider.CapsExtensionProvider;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.CapsExtension;
@@ -53,7 +54,8 @@ public class EntityCapsManager {
 
     public static final String HASH_METHOD = "sha-1";
     public static final String HASH_METHOD_CAPS = "SHA-1";
-
+    
+    // TODO entityNode should become a constant (final)
     private static String entityNode = "http://www.igniterealtime.org/projects/smack/";
     private static EntityCapsPersistentCache persistentCache;
 
@@ -95,6 +97,11 @@ public class EntityCapsManager {
         
         if (persistentCache != null)
         	persistentCache.addDiscoverInfoByNodePersistent(node, info);
+    }
+    
+    public EntityCapsManager(ServiceDiscoveryManager sdm) {
+        // Add Entity Capabilities (XEP-0115) feature node.
+        sdm.addFeature("http://jabber.org/protocol/caps");
     }
 
     /**
