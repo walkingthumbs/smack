@@ -21,11 +21,14 @@ class DirectSocketFactory
     {
     }
 
+    static private int roundrobin = 0;
+
     public Socket createSocket(String host, int port) 
         throws IOException, UnknownHostException
     {
         Socket newSocket = new Socket(Proxy.NO_PROXY);
-        newSocket.connect(new InetSocketAddress(host,port));
+	InetAddress resolved[] = InetAddress.getAllByName(host);
+        newSocket.connect(new InetSocketAddress(resolved[(roundrobin++) % resolved.length],port));
         return newSocket;
     }
 
