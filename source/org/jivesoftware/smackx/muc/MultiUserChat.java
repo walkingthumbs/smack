@@ -1276,7 +1276,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs granting ownership privileges to a user.
      */
     public void grantOwnership(Collection<String> jids) throws XMPPException {
-        changeAffiliationByOwner(jids, "owner");
+        changeAffiliationByAdmin(jids, "owner");
     }
 
     /**
@@ -1289,7 +1289,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs granting ownership privileges to a user.
      */
     public void grantOwnership(String jid) throws XMPPException {
-        changeAffiliationByOwner(jid, "owner");
+        changeAffiliationByAdmin(jid, "owner", null);
     }
 
     /**
@@ -1301,7 +1301,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs revoking ownership privileges from a user.
      */
     public void revokeOwnership(Collection<String> jids) throws XMPPException {
-        changeAffiliationByOwner(jids, "admin");
+        changeAffiliationByAdmin(jids, "admin");
     }
 
     /**
@@ -1313,7 +1313,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs revoking ownership privileges from a user.
      */
     public void revokeOwnership(String jid) throws XMPPException {
-        changeAffiliationByOwner(jid, "admin");
+        changeAffiliationByAdmin(jid, "admin", null);
     }
 
     /**
@@ -1431,7 +1431,8 @@ public class MultiUserChat {
         // Set the new affiliation.
         MUCAdmin.Item item = new MUCAdmin.Item(affiliation, null);
         item.setJid(jid);
-        item.setReason(reason);
+        if(reason != null)
+            item.setReason(reason);
         iq.addItem(item);
 
         // Wait for a response packet back from the server.
@@ -1632,7 +1633,7 @@ public class MultiUserChat {
      *         don't have enough privileges to get this information.
      */
     public Collection<Affiliate> getOwners() throws XMPPException {
-        return getAffiliatesByOwner("owner");
+        return getAffiliatesByAdmin("owner");
     }
 
     /**
