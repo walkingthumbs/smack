@@ -37,6 +37,10 @@ History
 =======
 This fork of smack was initiated by Rene Treffer for the [aSmack build environment](http://code.google.com/p/asmack/), in order to get Smack working on Android for the [buddycloud project](https://buddycloud.org/). aSmack on Googlecode is now inactive. Before the project was abdoned, Rene migrated the data from Googlecode to GitHub. This is where I forked his repo and started working on aSmack, mostly janitorial tasks, but I also merged smack 3.2.0 and keep smack_extended in sync with upstream.
 
+Contact
+=======
+Join us: ##smack @ freenode
+
 Kudos
 =====
 
