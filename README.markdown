@@ -20,6 +20,7 @@ The current state of Smack, plus additional patches.
 Here's a list of patches that are included in smack_extended. If there is a issue on the offical smack bugtracker, it will be linked too. The issue reports usually contain also a link to Smack's community forums, where more information about the issue can be found.
 
 - Fix for [SMACK-278 Deadlock during Smack disconnect](http://issues.igniterealtime.org/browse/SMACK-278)
+- Fix for [SMACK-371](http://issues.igniterealtime.org/browse/SMACK-371) Update MUC to the current spec (Prospody MUC support)
 - Entity Capabilites support [SMACK-361](http://issues.igniterealtime.org/browse/SMACK-361)
 - [Roster Versioning XEP-0237](http://xmpp.org/extensions/xep-0237.html)
 - BOSH support (XMPP over HTTP aka. HTTP Binding) [SMACK-187](http://issues.igniterealtime.org/browse/SMACK-187)
