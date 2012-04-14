@@ -6,6 +6,7 @@ Branches
 ========
 
 - smack_extended
+- smack_extended_xep0198
 - upstream
 - caps
 - smack-aiv smack from [a-iv](https://github.com/a-iv), who contributed here too.
@@ -25,6 +26,10 @@ Here's a list of patches that are included in smack_extended. If there is a issu
 - [Roster Versioning XEP-0237](http://xmpp.org/extensions/xep-0237.html)
 - BOSH support (XMPP over HTTP aka. HTTP Binding) [SMACK-187](http://issues.igniterealtime.org/browse/SMACK-187)
 - Some more fixes I can't remeber atm
+
+smack_extended_xep0198
+----------------------
+In sync with smack_extended plus XEP-0198 patches from devrandom (gibberbot)
 
 upstream
 --------
