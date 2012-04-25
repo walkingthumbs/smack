@@ -11,26 +11,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.jivesoftware.smackx.entitycaps;
 
-import org.jivesoftware.smackx.packet.DiscoverInfo;
+import org.jivesoftware.smack.util.Base64;
 
-public interface EntityCapsPersistentCache {
-	/**
-	 * Add an DiscoverInfo to the persistent Cache
-	 * 
-	 * @param node
-	 * @param info
-	 */
-	abstract void addDiscoverInfoByNodePersistent(String node, DiscoverInfo info);
-	
-	/**
-	 * Replay the Caches data into EntityCapsManager
-	 */
-	abstract void replay();
-	
-	/**
-	 * Empty the Cache
-	 */
-	abstract void emptyCache();
+/**
+ * @author Florian Schmaus
+ */
+public class Base64Encoder implements StringEncoder {
+
+    public String encode(String s) {
+        return Base64.encodeBytes(s.getBytes());
+    }
+
+    public String decode(String s) {
+        return new String(Base64.decode(s));
+    }
+    
 }

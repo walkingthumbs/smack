@@ -28,14 +28,13 @@ import java.io.StringReader;
 
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
-import org.jivesoftware.smack.util.Base64;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
- * Simples implementation of an EntityCapsPersistentCache that uses a
+ * Simple implementation of an EntityCapsPersistentCache that uses a
  * directory to store the Caps information for every known node. Every node
  * is represented by an file.
  * 
@@ -43,58 +42,65 @@ import org.xmlpull.v1.XmlPullParserException;
  *
  */
 public class SimpleDirectoryPersistentCache implements
-		EntityCapsPersistentCache {
-	
-	private File cacheDir;
-	
-	/**
-	 * Creates a new SimpleDirectoryPersistentCache Object. Make sure that the
-	 * cacheDir exists and that it's an directory.
-	 * 
-	 * @param cacheDir
-	 */
-	public SimpleDirectoryPersistentCache(File cacheDir) {
-		if (!cacheDir.exists()) 
-			throw new IllegalStateException("Cache directory \"" + cacheDir + "\" does not exist");
-		if (!cacheDir.isDirectory())
-			throw new IllegalStateException("Cache directory \"" + cacheDir + "\" is not a directory");
+        EntityCapsPersistentCache {
 
-		this.cacheDir = cacheDir;		
-	}
+    private File cacheDir;
+    private StringEncoder stringEncoder;
 
-	@Override
-	public void addDiscoverInfoByNodePersistent(String node, DiscoverInfo info) {
-	    String base64Node = Base64.encodeBytes(node.getBytes());
-		File nodeFile = new File(cacheDir, base64Node);
-		
-		try {
-			if (nodeFile.createNewFile())
-				writeInfoToFile(nodeFile, info);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	}
+    /**
+     * Creates a new SimpleDirectoryPersistentCache Object. Make sure that the
+     * cacheDir exists and that it's an directory.
+     * 
+     * @param cacheDir
+     */
+    public SimpleDirectoryPersistentCache(File cacheDir) {
+        this(cacheDir, new Base64Encoder());
+    }
+    
+    public SimpleDirectoryPersistentCache(File cacheDir, StringEncoder stringEncoder) {
+        if (!cacheDir.exists())
+            throw new IllegalStateException("Cache directory \"" + cacheDir
+                    + "\" does not exist");
+        if (!cacheDir.isDirectory())
+            throw new IllegalStateException("Cache directory \"" + cacheDir
+                    + "\" is not a directory");
 
-	@Override
-	public void replay() {
-	    File[] files = cacheDir.listFiles();
-		for (File f : files) {
-			String nodeBase64 = f.getName();
-			String node = new String(Base64.decode(nodeBase64));
-			DiscoverInfo info;
-			try {
-				info = restoreInfoFromFile(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-				continue;
-			}
-			if (info == null)
-				continue;
-			
-			EntityCapsManager.addDiscoverInfoByNode(node, info);
-		}
-	}
-	
+        this.cacheDir = cacheDir;
+        this.stringEncoder = stringEncoder;
+    }
+
+    @Override
+    public void addDiscoverInfoByNodePersistent(String node, DiscoverInfo info) {
+        String filename = stringEncoder.encode(node);
+        File nodeFile = new File(cacheDir, filename);
+
+        try {
+            if (nodeFile.createNewFile())
+                writeInfoToFile(nodeFile, info);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void replay() {
+        File[] files = cacheDir.listFiles();
+        for (File f : files) {
+            String node = stringEncoder.decode(f.getName());
+            DiscoverInfo info;
+            try {
+                info = restoreInfoFromFile(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+                continue;
+            }
+            if (info == null)
+                continue;
+
+            EntityCapsManager.addDiscoverInfoByNode(node, info);
+        }
+    }
+
     public void emptyCache() {
         File[] files = cacheDir.listFiles();
         for (File f : files) {
@@ -109,21 +115,35 @@ public class SimpleDirectoryPersistentCache implements
      * @param info
      * @throws IOException
      */
-	private static void writeInfoToFile(File file, DiscoverInfo info) throws IOException {
-		DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
-		dos.writeUTF(info.toXML());
-	}
-	
-	/**
-	 * Tries to restore an DiscoverInfo packet from a file.
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-    private static DiscoverInfo restoreInfoFromFile(File file) throws IOException {
+    private static void writeInfoToFile(File file, DiscoverInfo info)
+            throws IOException {
+        DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
+        try {
+            dos.writeUTF(info.toXML());
+        } finally {
+            dos.close();
+        }
+    }
+
+    /**
+     * Tries to restore an DiscoverInfo packet from a file.
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    private static DiscoverInfo restoreInfoFromFile(File file)
+            throws IOException {
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
-        String fileContent = dis.readUTF();
+        String fileContent = null;
+        try {
+            fileContent = dis.readUTF();
+        } finally {
+            dis.close();
+        }
+        if (fileContent == null)
+            return null;
+        
         Reader reader = new StringReader(fileContent);
         XmlPullParser parser;
         try {
