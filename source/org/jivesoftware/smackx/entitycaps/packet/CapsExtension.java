@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2009 Jonas Ådahl.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jivesoftware.smackx.packet;
+package org.jivesoftware.smackx.entitycaps.packet;
 
 import org.jivesoftware.smack.packet.PacketExtension;
 

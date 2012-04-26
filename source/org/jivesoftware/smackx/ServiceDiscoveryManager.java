@@ -28,9 +28,9 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
-import org.jivesoftware.smackx.entitycaps.CapsVerListener;
+import org.jivesoftware.smackx.entitycaps.CapsPresenceRenewer;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
-import org.jivesoftware.smackx.packet.CapsExtension;
+import org.jivesoftware.smackx.entitycaps.packet.CapsExtension;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.packet.DataForm;
@@ -56,8 +56,6 @@ public class ServiceDiscoveryManager {
     
     private static boolean cacheNonCaps=true;
 
-    private boolean sendPresence = false;
-    
     private Map<String,DiscoverInfo> nonCapsCache =
     	new ConcurrentHashMap<String,DiscoverInfo>();
 
@@ -94,9 +92,10 @@ public class ServiceDiscoveryManager {
 
         // For every XMPPConnection, add one EntityCapsManager.
         if (connection instanceof XMPPConnection
-        		&& ((XMPPConnection)connection).isEntityCapsEnabled()) {
-            setEntityCapsManager(new EntityCapsManager(this));
-            capsManager.addCapsVerListener(new CapsPresenceRenewer());
+                && ((XMPPConnection) connection).isEntityCapsEnabled()) {
+            EntityCapsManager capsManager = new EntityCapsManager(this);
+            setEntityCapsManager(capsManager);
+            capsManager.addCapsVerListener(new CapsPresenceRenewer((XMPPConnection) connection, capsManager));
         }
 
         renewEntityCapsVersion();
@@ -763,27 +762,5 @@ public class ServiceDiscoveryManager {
     
     public EntityCapsManager getEntityCapsManager(){
     	return capsManager;
-    }
-
-    private void setSendPresence() {
-        sendPresence = true;
-    }
-
-    private boolean isSendPresence() {
-        return sendPresence;
-    }
-
-
-    private class CapsPresenceRenewer implements CapsVerListener {
-        public void capsVerUpdated(String ver) {
-            // Send an empty presence, and let the packet interceptor
-            // add a <c/> node to it.
-            if (((XMPPConnection)connection).isAuthenticated() &&
-                    (((XMPPConnection)connection).isSendPresence() ||
-                     isSendPresence())) {
-                Presence presence = new Presence(Presence.Type.available);
-                connection.sendPacket(presence);
-            }
-        }
     }
 }

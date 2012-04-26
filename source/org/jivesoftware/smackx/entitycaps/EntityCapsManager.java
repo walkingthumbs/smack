@@ -18,6 +18,7 @@
 package org.jivesoftware.smackx.entitycaps;
 
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.AndFilter;
@@ -27,9 +28,9 @@ import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.util.Base64;
 import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.entitycaps.packet.CapsExtension;
 import org.jivesoftware.smackx.provider.CapsExtensionProvider;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
-import org.jivesoftware.smackx.packet.CapsExtension;
 import org.jivesoftware.smackx.packet.DataForm;
 import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
 
@@ -41,6 +42,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -56,6 +58,8 @@ public class EntityCapsManager {
     // TODO entityNode should become a constant (final)
     private static String entityNode = "http://www.igniterealtime.org/projects/smack/";
     private static EntityCapsPersistentCache persistentCache;
+
+    private ServiceDiscoveryManager sdm;
 
     /**
      * Map of (node, hash algorithm) -&gt; DiscoverInfo. 
@@ -77,6 +81,7 @@ public class EntityCapsManager {
         new CopyOnWriteArraySet<CapsVerListener>();
 
     private String currentCapsVersion = null;
+    private boolean sendPresence = false;
 
     static {
         ProviderManager.getInstance().addExtensionProvider(CapsExtension.NODE_NAME,
@@ -101,6 +106,8 @@ public class EntityCapsManager {
     public EntityCapsManager(ServiceDiscoveryManager sdm) {
         // Add Entity Capabilities (XEP-0115) feature node.
         sdm.addFeature("http://jabber.org/protocol/caps");
+        
+        this.sdm = sdm;
     }
 
     /**
@@ -301,7 +308,6 @@ public class EntityCapsManager {
             }
         }
 
-
         setCurrentCapsVersion(discoverInfo, capsToHash(s));
     }
 
@@ -316,10 +322,41 @@ public class EntityCapsManager {
         notifyCapsVerListeners();
     }
     
-    public static void setPersistentCache(EntityCapsPersistentCache cache) {
-    	if (persistentCache != null)
-    		throw new IllegalStateException("Entity Caps Persistent Cache was already set");
-    	persistentCache = cache;
-    	persistentCache.replay();
+    /**
+     * Set the persistent cache implementation
+     * 
+     * @param cache
+     * @throws IOException
+     */
+    public static void setPersistentCache(EntityCapsPersistentCache cache) throws IOException {
+        if (persistentCache != null)
+            throw new IllegalStateException("Entity Caps Persistent Cache was already set");
+        persistentCache = cache;
+        persistentCache.replay();
+    }
+    
+    /**
+     * Get a DiscoverInfo for the current entity caps node.
+     *
+     * @return a DiscoverInfo for the current entity caps node
+     */
+    public DiscoverInfo getOwnDiscoverInfo() {
+        DiscoverInfo di = new DiscoverInfo();
+        di.setType(IQ.Type.RESULT);
+        di.setNode(getNode() + "#" + getCapsVersion());
+
+        // Add discover info
+        sdm.addDiscoverInfoTo(di);
+
+        return di;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setSendPresence() {
+        sendPresence = true;
+    }
+
+    public boolean isSendPresence() {
+        return sendPresence;
     }
 }
