@@ -44,6 +44,10 @@ dnssec
 ------
 DNSSEC patches from Adam Fisk. Logged as [SMACK-366](http://issues.igniterealtime.org/browse/SMACK-366). Forum Link: http://community.igniterealtime.org/message/220886#220886
 
+Contributing
+============
+Please follow the guidelines for Smack contributors: http://community.igniterealtime.org/docs/DOC-1984
+
 History
 =======
 This fork of smack was initiated by Rene Treffer for the [aSmack build environment](http://code.google.com/p/asmack/), in order to get Smack working on Android for the [buddycloud project](https://buddycloud.org/). aSmack on Googlecode is now inactive. Before the project was abdoned, Rene migrated the data from Googlecode to GitHub. This is where I forked his repo and started working on aSmack, mostly janitorial tasks, but I also merged smack 3.2.0 and keep master in sync with upstream.
