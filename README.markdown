@@ -26,6 +26,7 @@ Here's a list of patches that are included in master. If there is a issue on the
 - Entity Capabilites support [SMACK-361](http://issues.igniterealtime.org/browse/SMACK-361)
 - [Roster Versioning XEP-0237](http://xmpp.org/extensions/xep-0237.html)
 - BOSH support (XMPP over HTTP aka. HTTP Binding) [SMACK-187](http://issues.igniterealtime.org/browse/SMACK-187)
+- Fix for [SMACK-384 Endless waiting for connection to be established](http://issues.igniterealtime.org/browse/SMACK-384)
 - Some more fixes I can't remeber atm
 
 xep0198
