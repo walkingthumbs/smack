@@ -21,6 +21,8 @@
 package org.jivesoftware.smack;
 
 import javax.net.ssl.X509TrustManager;
+
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -29,7 +31,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,8 +69,14 @@ class ServerTrustManager implements X509TrustManager {
         	} else {
         		try {
         			trustStore = KeyStore.getInstance(options.getType());
-        			in = new FileInputStream(options.getPath());
-        			trustStore.load(in, options.getPassword().toCharArray());
+        			if (options.getPath() != null) {
+        				in = new BufferedInputStream(new FileInputStream(options.getPath()));
+        			}
+        			char [] chars = null;
+        			if (options.getPassword() != null) {
+        				chars = options.getPassword().toCharArray();
+        			}
+        			trustStore.load(in, chars);
         		}
         		catch (Exception e) {
         			trustStore = null;
