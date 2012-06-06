@@ -120,7 +120,9 @@ import org.jivesoftware.smackx.provider.JingleProvider;
  * <p/>
  *                                                   try {
  *                                                      // Accept the call
- *                                                      IncomingJingleSession session = request.accept();
+ *                                                      IncomingJingleSession session = jm1.createIncomingJingleSession(request);
+ * 														session.addListener(new BeemJingleSessionListener());
+ *			  	                                        session = request.accept(session);
  * <p/>
  * <p/>
  *                                                       // Start the call
@@ -456,6 +458,19 @@ public class JingleManager implements JingleSessionListener {
                             Jingle jin = (Jingle) pin;
                             if (jin.getAction().equals(JingleActionEnum.SESSION_INITIATE)) {
                                 return true;
+                            } else if (jin.getAction().equals(JingleActionEnum.SESSION_TERMINATE)){
+                            	//nikita: we close internally the session
+                            	JingleSession sess = getSession(jin.getResponder());
+                            	if (sess != null && !sess.isStarted()) {
+                            		try {
+										sess.terminate("Cancelled");
+									} catch (XMPPException e) { //nikita: should not happen
+										e.printStackTrace();
+										sess.close();
+									}
+                            		sess.removeListener(JingleManager.this);
+                                    jingleSessions.remove(sess);
+                            	}
                             }
                         }
                     }

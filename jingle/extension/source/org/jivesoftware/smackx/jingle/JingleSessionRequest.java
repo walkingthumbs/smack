@@ -100,16 +100,17 @@ public class JingleSessionRequest {
 //        return session;
 //    }
 
+    //nikita: we already have a session, we need that early session because we need to listen on cancel request
     /**
      * Accepts this request and creates the incoming Jingle session.
      *
      * @return Returns the <b><i>IncomingJingleSession</b></i> on which the
      *         negotiation can be carried out.
      */
-    public synchronized JingleSession accept() throws XMPPException {
-        JingleSession session = null;
+    public synchronized JingleSession accept(JingleSession session) throws XMPPException {
+        //JingleSession session = null;
         synchronized (manager) {
-            session = manager.createIncomingJingleSession(this);
+            //session = manager.createIncomingJingleSession(this);
             // Acknowledge the IQ reception
             session.setSid(this.getSessionID());
             //session.sendAck(this.getJingle());
