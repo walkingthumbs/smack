@@ -28,7 +28,6 @@ import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.RosterListener;
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.IQ;
@@ -49,6 +48,7 @@ import org.jivesoftware.smackx.jingle.nat.TransportResolver;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.Jingle;
 import org.jivesoftware.smackx.provider.JingleProvider;
+
 
 /**
  * Jingle is a session establishment protocol defined in (XEP-0166).
@@ -258,7 +258,7 @@ public class JingleManager implements JingleSessionListener {
      */
     public static void setJingleServiceEnabled() {
         ProviderManager providerManager = ProviderManager.getInstance();
-        providerManager.addIQProvider("jingle", "urn:xmpp:tmp:jingle", new JingleProvider());
+        providerManager.addIQProvider("jingle", "urn:xmpp:jingle:1", new JingleProvider());
 
         // Enable the Jingle support on every established connection
         // The ServiceDiscoveryManager class should have been already
