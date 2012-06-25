@@ -96,7 +96,8 @@ public class Demo extends JFrame {
 
                 try {
                     // Accept the call
-                    incoming = request.accept();
+		    incoming = jm.createIncomingJingleSession(request);
+                    incoming = request.accept(incoming);
 
                     // Start the call
                     incoming.startIncoming();
