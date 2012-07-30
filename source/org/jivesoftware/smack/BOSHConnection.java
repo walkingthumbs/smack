@@ -340,15 +340,11 @@ public class BOSHConnection extends Connection {
 
         // Create the roster if it is not a reconnection.
         if (this.roster == null) {
-        	if(this.rosterStorage==null){
-        		this.roster = new Roster(this);
-        	}
-        	else{
-        		this.roster = new Roster(this,rosterStorage);
-        	}
-        }
-        if (config.isRosterLoadedAtLogin()) {
-            this.roster.reload();
+            if (this.rosterStorage == null) {
+                this.roster = new Roster(this);
+            } else {
+                this.roster = new Roster(this, rosterStorage);
+            }
         }
 
         // Set presence to online.
@@ -360,6 +356,9 @@ public class BOSHConnection extends Connection {
         authenticated = true;
         anonymous = false;
 
+        if (config.isRosterLoadedAtLogin()) {
+            this.roster.reload();
+        }
         // Stores the autentication for future reconnection
         config.setLoginInfo(username, password, resource);
 
