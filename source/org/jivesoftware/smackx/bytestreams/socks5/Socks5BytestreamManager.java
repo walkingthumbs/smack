@@ -14,15 +14,16 @@
 package org.jivesoftware.smackx.bytestreams.socks5;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
@@ -89,7 +90,7 @@ public final class Socks5BytestreamManager implements BytestreamManager {
     static {
         Connection.addConnectionCreationListener(new ConnectionCreationListener() {
 
-            public void connectionCreated(Connection connection) {
+            public void connectionCreated(final Connection connection) {
                 final Socks5BytestreamManager manager;
                 manager = Socks5BytestreamManager.getBytestreamManager(connection);
 
@@ -98,6 +99,14 @@ public final class Socks5BytestreamManager implements BytestreamManager {
 
                     public void connectionClosed() {
                         manager.disableService();
+                    }
+                    
+                    public void connectionClosedOnError(Exception e) {
+                        manager.disableService();
+                    }
+                    
+                    public void reconnectionSuccessful() {
+                        managers.put(connection, manager);
                     }
 
                 });
@@ -118,7 +127,7 @@ public final class Socks5BytestreamManager implements BytestreamManager {
     private final static Random randomGenerator = new Random();
 
     /* stores one Socks5BytestreamManager for each XMPP connection */
-    private final static Map<Connection, Socks5BytestreamManager> managers = new HashMap<Connection, Socks5BytestreamManager>();
+    private final static Map<Connection, Socks5BytestreamManager> managers = new WeakHashMap<Connection, Socks5BytestreamManager>();
 
     /* XMPP connection */
     private final Connection connection;

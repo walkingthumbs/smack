@@ -39,8 +39,10 @@ import org.jivesoftware.smackx.packet.DiscoverItems;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -110,7 +112,8 @@ public class AdHocCommandManager {
      * Value=command. Command node matches the node attribute sent by command
      * requesters.
      */
-    private Map<String, AdHocCommandInfo> commands = new ConcurrentHashMap<String, AdHocCommandInfo>();
+    private Map<String, AdHocCommandInfo> commands = Collections
+            .synchronizedMap(new WeakHashMap<String, AdHocCommandInfo>());
 
     /**
      * Map a command session ID with the instance LocalCommand. The LocalCommand

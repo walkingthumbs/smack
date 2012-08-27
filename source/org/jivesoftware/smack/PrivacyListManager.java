@@ -43,7 +43,8 @@ import java.util.*;
 public class PrivacyListManager {
 
     // Keep the list of instances of this class.
-	private static Map<Connection, PrivacyListManager> instances = new Hashtable<Connection, PrivacyListManager>();
+    private static Map<Connection, PrivacyListManager> instances = Collections
+            .synchronizedMap(new WeakHashMap<Connection, PrivacyListManager>());
 
 	private Connection connection;
 	private final List<PrivacyListListener> listeners = new ArrayList<PrivacyListListener>();
