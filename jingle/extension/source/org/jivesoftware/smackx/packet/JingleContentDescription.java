@@ -40,7 +40,7 @@ public abstract class JingleContentDescription implements PacketExtension {
 
     // non-static
 
-    private final List payloads = new ArrayList();
+    private final List<JinglePayloadType> payloads = new ArrayList<JinglePayloadType>();
 
     /**
      * Creates a content description..
@@ -88,11 +88,11 @@ public abstract class JingleContentDescription implements PacketExtension {
      *
      * @param pts the payloads to add.
      */
-    public void addAudioPayloadTypes(final List pts) {
+    public void addAudioPayloadTypes(final List<PayloadType.Audio> pts) {
         synchronized (payloads) {
-            Iterator ptIter = pts.iterator();
+            Iterator<PayloadType.Audio> ptIter = pts.iterator();
             while (ptIter.hasNext()) {
-                PayloadType.Audio pt = (PayloadType.Audio) ptIter.next();
+                PayloadType.Audio pt = ptIter.next();
                 addJinglePayloadType(new JinglePayloadType.Audio(pt));
             }
         }
@@ -103,7 +103,7 @@ public abstract class JingleContentDescription implements PacketExtension {
      *
      * @return an Iterator for the audio payloads in the packet.
      */
-    public Iterator getJinglePayloadTypes() {
+    public Iterator<JinglePayloadType> getJinglePayloadTypes() {
         return Collections.unmodifiableList(getJinglePayloadTypesList()).iterator();
     }
 
@@ -112,9 +112,9 @@ public abstract class JingleContentDescription implements PacketExtension {
      *
      * @return a list for the audio payloads in the packet.
      */
-    public ArrayList getJinglePayloadTypesList() {
+    public ArrayList<JinglePayloadType> getJinglePayloadTypesList() {
         synchronized (payloads) {
-            return new ArrayList(payloads);
+            return new ArrayList<JinglePayloadType>(payloads);
         }
     }
 
@@ -123,15 +123,15 @@ public abstract class JingleContentDescription implements PacketExtension {
      *
      * @return a list of PayloadType.Audio
      */
-    public ArrayList getAudioPayloadTypesList() {
-        ArrayList result = new ArrayList();
-        Iterator jinglePtsIter = getJinglePayloadTypes();
+    public ArrayList<PayloadType.Audio> getAudioPayloadTypesList() {
+        ArrayList<PayloadType.Audio> result = new ArrayList<PayloadType.Audio>();
+        Iterator<JinglePayloadType> jinglePtsIter = getJinglePayloadTypes();
 
         while (jinglePtsIter.hasNext()) {
-            JinglePayloadType jpt = (JinglePayloadType) jinglePtsIter.next();
+            JinglePayloadType jpt = jinglePtsIter.next();
             if (jpt instanceof JinglePayloadType.Audio) {
                 JinglePayloadType.Audio jpta = (JinglePayloadType.Audio) jpt;
-                result.add(jpta.getPayloadType());
+                result.add((PayloadType.Audio)jpta.getPayloadType());
             }
         }
 
@@ -163,9 +163,9 @@ public abstract class JingleContentDescription implements PacketExtension {
                 buf.append(" xmlns=\"").append(getNamespace()).append("\"");
                 buf.append(" media=\"").append(getMediaType()).append("\" >");
 
-                Iterator pt = payloads.listIterator();
+                Iterator<JinglePayloadType> pt = payloads.listIterator();
                 while (pt.hasNext()) {
-                    JinglePayloadType pte = (JinglePayloadType) pt.next();
+                    JinglePayloadType pte = pt.next();
                     buf.append(pte.toXML());
                 }
                 buf.append("</").append(getElementName()).append(">");

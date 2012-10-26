@@ -307,7 +307,7 @@ public class PacketParserUtils {
                         }
                         else if (provider instanceof Class) {
                             iqPacket = (IQ)PacketParserUtils.parseWithIntrospection(elementName,
-                                    (Class)provider, parser);
+                                    (Class<?>)provider, parser);
                         }
                     }
                 }
@@ -774,7 +774,7 @@ public class PacketParserUtils {
             }
             else if (provider instanceof Class) {
                 return (PacketExtension)parseWithIntrospection(
-                        elementName, (Class)provider, parser);
+                        elementName, (Class<?>)provider, parser);
             }
         }
         // No providers registered, so use a default extension.
@@ -819,7 +819,7 @@ public class PacketParserUtils {
     }
 
     public static Object parseWithIntrospection(String elementName,
-            Class objectClass, XmlPullParser parser) throws Exception
+            Class<?> objectClass, XmlPullParser parser) throws Exception
     {
         boolean done = false;
         Object object = objectClass.newInstance();
@@ -830,7 +830,7 @@ public class PacketParserUtils {
                 String stringValue = parser.nextText();
                 PropertyDescriptor descriptor = new PropertyDescriptor(name, objectClass);
                 // Load the class type of the property.
-                Class propertyType = descriptor.getPropertyType();
+                Class<?> propertyType = descriptor.getPropertyType();
                 // Get the value of the property by converting it from a
                 // String to the correct object type.
                 Object value = decode(propertyType, stringValue);
@@ -855,7 +855,7 @@ public class PacketParserUtils {
      * @return the String value decoded into the specified type.
      * @throws Exception If decoding failed due to an error.
      */
-    private static Object decode(Class type, String value) throws Exception {
+    private static Object decode(Class<?> type, String value) throws Exception {
         if (type.getName().equals("java.lang.String")) {
             return value;
         }

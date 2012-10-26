@@ -111,48 +111,48 @@ public class XHTMLExtensionTest extends SmackTestCase {
      * something is wrong
      */
     public void testSendSimpleXHTMLMessageAndDisplayReceivedXHTMLMessage() {
-        // Create a chat for each connection
-        Chat chat1 = getConnection(0).getChatManager().createChat(getBareJID(1), null);
-        final PacketCollector chat2 = getConnection(1).createPacketCollector(
-                new ThreadFilter(chat1.getThreadID()));
+	// Create a chat for each connection
+	Chat chat1 = getConnection(0).getChatManager().createChat(getBareJID(1), null);
+	final PacketCollector chat2 = getConnection(1).createPacketCollector(
+		new ThreadFilter(chat1.getThreadID()));
 
-        // User1 creates a message to send to user2
-        Message msg = new Message();
-        msg.setSubject("Any subject you want");
-        msg.setBody("Hey John, this is my new green!!!!");
-        // Create a XHTMLExtension Package and add it to the message
-        XHTMLExtension xhtmlExtension = new XHTMLExtension();
-        xhtmlExtension.addBody(
-                "<body><p style='font-size:large'>Hey John, this is my new <span style='color:green'>green</span><em>!!!!</em></p></body>");
-        msg.addExtension(xhtmlExtension);
+	// User1 creates a message to send to user2
+	Message msg = new Message();
+	msg.setSubject("Any subject you want");
+	msg.setBody("Hey John, this is my new green!!!!");
+	// Create a XHTMLExtension Package and add it to the message
+	XHTMLExtension xhtmlExtension = new XHTMLExtension();
+	xhtmlExtension.addBody(
+	"<body><p style='font-size:large'>Hey John, this is my new <span style='color:green'>green</span><em>!!!!</em></p></body>");
+	msg.addExtension(xhtmlExtension);
 
-        // User1 sends the message that contains the XHTML to user2
-        try {
-            chat1.sendMessage(msg);
-        }
-        catch (Exception e) {
-            fail("An error occured sending the message with XHTML");
-        }
-        Packet packet = chat2.nextResult(2000);
-        Message message = (Message) packet;
-        assertNotNull("Body is null", message.getBody());
-        try {
-            xhtmlExtension =
-                    (XHTMLExtension) message.getExtension(
-                            "html",
-                            "http://jabber.org/protocol/xhtml-im");
-            assertNotNull(
-                    "Message without extension \"http://jabber.org/protocol/xhtml-im\"",
-                    xhtmlExtension);
-            assertTrue("Message without XHTML bodies", xhtmlExtension.getBodiesCount() > 0);
-            for (Iterator it = xhtmlExtension.getBodies(); it.hasNext();) {
-                String body = (String) it.next();
-                System.out.println(body);
-            }
-        }
-        catch (ClassCastException e) {
-            fail("ClassCastException - Most probable cause is that smack providers is misconfigured");
-        }
+	// User1 sends the message that contains the XHTML to user2
+	try {
+	    chat1.sendMessage(msg);
+	}
+	catch (Exception e) {
+	    fail("An error occured sending the message with XHTML");
+	}
+	Packet packet = chat2.nextResult(2000);
+	Message message = (Message) packet;
+	assertNotNull("Body is null", message.getBody());
+	try {
+	    xhtmlExtension =
+		(XHTMLExtension) message.getExtension(
+			"html",
+		"http://jabber.org/protocol/xhtml-im");
+	    assertNotNull(
+		    "Message without extension \"http://jabber.org/protocol/xhtml-im\"",
+		    xhtmlExtension);
+	    assertTrue("Message without XHTML bodies", xhtmlExtension.getBodiesCount() > 0);
+	    for (Iterator<String> it = xhtmlExtension.getBodies(); it.hasNext();) {
+		String body = it.next();
+		System.out.println(body);
+	    }
+	}
+	catch (ClassCastException e) {
+	    fail("ClassCastException - Most probable cause is that smack providers is misconfigured");
+	}
     }
 
     /**
@@ -194,43 +194,43 @@ public class XHTMLExtensionTest extends SmackTestCase {
                 "<body xml:lang=\"en-US\"><h1>awesome!</h1><p>As Emerson once said:</p><blockquote><p>A foolish consistency is the hobgoblin of little minds.</p></blockquote></body>");
         msg.addExtension(xhtmlExtension);
 
-        // User1 sends the message that contains the XHTML to user2
-        try {
-            bodiesSent = xhtmlExtension.getBodiesCount();
-            bodiesReceived = 0;
-            chat1.sendMessage(msg);
-        }
-        catch (Exception e) {
-            fail("An error occured sending the message with XHTML");
-        }
-        Packet packet = chat2.nextResult(2000);
-        int received = 0;
-        Message message = (Message) packet;
-        assertNotNull("Body is null", message.getBody());
-        try {
-            xhtmlExtension =
-                    (XHTMLExtension) message.getExtension(
-                            "html",
-                            "http://jabber.org/protocol/xhtml-im");
-            assertNotNull(
-                    "Message without extension \"http://jabber.org/protocol/xhtml-im\"",
-                    xhtmlExtension);
-            assertTrue("Message without XHTML bodies", xhtmlExtension.getBodiesCount() > 0);
-            for (Iterator it = xhtmlExtension.getBodies(); it.hasNext();) {
-                received++;
-                System.out.println((String) it.next());
-            }
-            bodiesReceived = received;
-        }
-        catch (ClassCastException e) {
-            fail("ClassCastException - Most probable cause is that smack providers is " +
-                    "misconfigured");
-        }
-        // Wait half second so that the complete test can run
-        assertEquals(
-                "Number of sent and received XHTMP bodies does not match",
-                bodiesSent,
-                bodiesReceived);
+	// User1 sends the message that contains the XHTML to user2
+	try {
+	    bodiesSent = xhtmlExtension.getBodiesCount();
+	    bodiesReceived = 0;
+	    chat1.sendMessage(msg);
+	}
+	catch (Exception e) {
+	    fail("An error occured sending the message with XHTML");
+	}
+	Packet packet = chat2.nextResult(2000);
+	int received = 0;
+	Message message = (Message) packet;
+	assertNotNull("Body is null", message.getBody());
+	try {
+	    xhtmlExtension =
+		(XHTMLExtension) message.getExtension(
+			"html",
+		"http://jabber.org/protocol/xhtml-im");
+	    assertNotNull(
+		    "Message without extension \"http://jabber.org/protocol/xhtml-im\"",
+		    xhtmlExtension);
+	    assertTrue("Message without XHTML bodies", xhtmlExtension.getBodiesCount() > 0);
+	    for (Iterator<String> it = xhtmlExtension.getBodies(); it.hasNext();) {
+		received++;
+		System.out.println(it.next());
+	    }
+	    bodiesReceived = received;
+	}
+	catch (ClassCastException e) {
+	    fail("ClassCastException - Most probable cause is that smack providers is " +
+	    "misconfigured");
+	}
+	// Wait half second so that the complete test can run
+	assertEquals(
+		"Number of sent and received XHTMP bodies does not match",
+		bodiesSent,
+		bodiesReceived);
     }
 
     protected int getMaxConnections() {
