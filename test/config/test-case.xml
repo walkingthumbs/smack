@@ -8,6 +8,7 @@
 
     <!-- Username prefix to use for creating accounts. Same value will be used for passwords. -->
     <username>user</username>
+    <password same='true'>passw0rd</password>
 
     <!-- Chat and MUC domain names to use -->
     <chat>chat</chat>
