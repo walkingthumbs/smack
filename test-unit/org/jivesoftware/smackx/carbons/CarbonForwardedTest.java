@@ -27,7 +27,7 @@ import java.util.TimeZone;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.packet.DelayInfo;
 import org.jivesoftware.smackx.packet.DelayInformation;
-import org.jivesoftware.smackx.packet.Forwarded;
+import org.jivesoftware.smackx.forward.Forwarded;
 import org.junit.Test;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
