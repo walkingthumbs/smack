@@ -1,12 +1,7 @@
-.PHONY: all clean test-unit
+.PHONY: all clean test-unit eclipse
 .INTERMEDIATE: .settings
 
 all: build-smack .settings
-
-.settings:
-	ln -s build/eclipse/.settings .settings
-	ln -s build/eclipse/.classpath .classpath
-	ln -s build/eclipse/.project .project
 
 # Can not use 'build' as target name, because there is a
 # directory called build
@@ -18,3 +13,14 @@ clean:
 
 test-unit:
 	cd build && ant test-unit
+
+eclipse: .settings .classpath .project
+
+.settings:
+	ln -s build/eclipse/.settings .settings
+
+.classpath:
+	ln -s build/eclipse/.classpath .classpath
+
+.project:
+	ln -s build/eclipse/.project .project
