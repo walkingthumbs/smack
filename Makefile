@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean test-unit
 .INTERMEDIATE: .settings
 
 all: build-smack .settings
