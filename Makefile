@@ -1,5 +1,4 @@
 .PHONY: all clean test-unit eclipse
-.INTERMEDIATE: .settings
 
 all: build-smack .settings
 
