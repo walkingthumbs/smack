@@ -2541,8 +2541,7 @@ public class MultiUserChat {
                     connection.removePacketListener(connectionListener);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Do nothing
         }
     }
