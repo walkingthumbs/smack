@@ -1,6 +1,8 @@
 .PHONY: all clean test-unit eclipse
 
-all: build-smack .settings
+export JAVA_TOOL_OPTIONS:='-Dfile.encoding=iso-8859-1'
+
+all: build-smack
 
 # Can not use 'build' as target name, because there is a
 # directory called build
@@ -10,8 +12,11 @@ build-smack:
 clean:
 	cd build && ant clean
 
-test-unit:
+unit-test:
 	cd build && ant test-unit
+
+integration-test:
+	cd build && ant test
 
 eclipse: .settings .classpath .project
 
