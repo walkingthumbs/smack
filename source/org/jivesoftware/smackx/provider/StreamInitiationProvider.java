@@ -1,32 +1,3 @@
-<<<<<<< HEAD
-/**
- * $RCSfile$
- * $Revision: $
- * $Date: $
- *
- * Copyright 2003-2006 Jive Software.
- *
- * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.jivesoftware.smackx.provider;
-
-import java.text.ParseException;
-import java.util.Date;
-
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.provider.IQProvider;
-=======
 /**
  * $RCSfile$
  * $Revision$
@@ -53,7 +24,6 @@ import java.util.Date;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
->>>>>>> 783b81b... SMACK-352 removed duplicated headers, fixed svn keywords
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.packet.DataForm;
 import org.jivesoftware.smackx.packet.StreamInitiation;
