@@ -391,11 +391,18 @@ class PacketReader {
                 else if(parser.getName().equals("ver")){
                 	connection.getConfiguration().setRosterVersioningAvailable(true);
                 }
-                else if(parser.getName().equals("c")){
-                	String node = parser.getAttributeValue(null, "node");
-                	String ver = parser.getAttributeValue(null, "ver");
-                	String capsNode = node+"#"+ver;
-                	connection.getConfiguration().setCapsNode(capsNode);
+                // Set the entity caps node for the server if one is send
+                // See http://xmpp.org/extensions/xep-0115.html#stream
+                else if (parser.getName().equals("c")) {
+                    String node = parser.getAttributeValue(null, "node");
+                    String ver = parser.getAttributeValue(null, "ver");
+                    if (ver != null && node != null) {
+                        String capsNode = node + "#" + ver;
+                        // In order to avoid a dependency from smack to smackx
+                        // we have to set the services caps node in the connection
+                        // and not directly in the EntityCapsManager
+                        connection.setServiceCapsNode(capsNode);
+                    }
                 }
                 else if (parser.getName().equals("session")) {
                     // The server supports sessions

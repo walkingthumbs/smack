@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision: 9920 $
- * $Date: 2008-02-16 00:32:46 +0800 (Sat, 16 Feb 2008) $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -26,12 +26,10 @@ import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
-import org.jivesoftware.smackx.entitycaps.CapsPresenceRenewer;
 import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
-import org.jivesoftware.smackx.entitycaps.packet.CapsExtension;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
+import org.jivesoftware.smackx.packet.DiscoverInfo.Identity;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 import org.jivesoftware.smackx.packet.DataForm;
 
@@ -51,13 +49,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServiceDiscoveryManager {
 
-    private static String identityName = "Smack";
-    private static String identityType = "pc";
-    
-    private static boolean cacheNonCaps=true;
-
-    private Map<String,DiscoverInfo> nonCapsCache =
-    	new ConcurrentHashMap<String,DiscoverInfo>();
+    private static final String DEFAULT_IDENTITY_NAME = "Smack";
+    private static final String DEFAULT_IDENTITY_CATEGORY = "client";
+    private static final String DEFAULT_IDENTITY_TYPE = "pc";
+        
+    private static List<DiscoverInfo.Identity> identities = new LinkedList<DiscoverInfo.Identity>();
 
     private EntityCapsManager capsManager;
 
@@ -72,16 +68,16 @@ public class ServiceDiscoveryManager {
 
     // Create a new ServiceDiscoveryManager on every established connection
     static {
-        // Add service discovery for normal XMPP c2s connections
-        XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener() {
+        Connection.addConnectionCreationListener(new ConnectionCreationListener() {
             public void connectionCreated(Connection connection) {
                 new ServiceDiscoveryManager(connection);
             }
         });
+        identities.add(new Identity(DEFAULT_IDENTITY_CATEGORY, DEFAULT_IDENTITY_NAME, DEFAULT_IDENTITY_TYPE));
     }
 
     /**
-     * Creates a new ServiceDiscoveryManager for a given connection. This means that the 
+     * Creates a new ServiceDiscoveryManager for a given Connection. This means that the 
      * service manager will respond to any service discovery request that the connection may
      * receive. 
      * 
@@ -89,16 +85,6 @@ public class ServiceDiscoveryManager {
      */
     public ServiceDiscoveryManager(Connection connection) {
         this.connection = connection;
-
-        // For every XMPPConnection, add one EntityCapsManager.
-        if (connection instanceof XMPPConnection
-                && ((XMPPConnection) connection).isEntityCapsEnabled()) {
-            EntityCapsManager capsManager = new EntityCapsManager(this);
-            setEntityCapsManager(capsManager);
-            capsManager.addCapsVerListener(new CapsPresenceRenewer((XMPPConnection) connection, capsManager));
-        }
-
-        renewEntityCapsVersion();
 
         init();
     }
@@ -121,7 +107,12 @@ public class ServiceDiscoveryManager {
      *          in a disco request.
      */
     public static String getIdentityName() {
-        return identityName;
+        DiscoverInfo.Identity identity = identities.get(0);
+        if (identity != null) {
+            return identity.getName();
+        } else {
+            return null;
+        } 
     }
 
     /**
@@ -132,7 +123,9 @@ public class ServiceDiscoveryManager {
      *          in a disco request.
      */
     public static void setIdentityName(String name) {
-        identityName = name;
+        DiscoverInfo.Identity identity = identities.remove(0);
+        identity = new DiscoverInfo.Identity(DEFAULT_IDENTITY_CATEGORY, name, DEFAULT_IDENTITY_TYPE);
+        identities.add(identity);
     }
 
     /**
@@ -144,7 +137,12 @@ public class ServiceDiscoveryManager {
      *          disco request.
      */
     public static String getIdentityType() {
-        return identityType;
+        DiscoverInfo.Identity identity = identities.get(0);
+        if (identity != null) {
+            return identity.getType();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -156,63 +154,22 @@ public class ServiceDiscoveryManager {
      *          disco request.
      */
     public static void setIdentityType(String type) {
-        identityType = type;
-    }
-    
-    /**
-     * Enables caching of non caps entities to reduce traffic. If enabled discover infos of 
-     * entities without xep-0115 are store in a String,DiscoverInfo map and
-     * discoverInfo(String) queries this map before sending a real discover info to the
-     * remote entity. Enabled by default.
-     */
-    public static void setNonCapsCaching(boolean set){
-    	cacheNonCaps = set;
-    }
-    
-    /**
-     * Check if caching of non caps entities is enabled
-     */
-    
-    public static boolean isNonCapsCachingEnabled(){
-    	return cacheNonCaps;
-    }
-
-    /**
-     * Add discover info response data.
-     *
-     * @param response the discover info response packet
-     */
-    public void addDiscoverInfoTo(DiscoverInfo response) {
-        // Set this client identity
-        DiscoverInfo.Identity identity = new DiscoverInfo.Identity("client",
-                getIdentityName());
-        identity.setType(getIdentityType());
-        response.addIdentity(identity);
-        // Add the registered features to the response
-        synchronized (features) {
-            for (Iterator<String> it = getFeatures(); it.hasNext();) {
-                response.addFeature(it.next());
-            }
-            if (extendedInfo != null) {
-                response.addExtension(extendedInfo);
-            }
+        DiscoverInfo.Identity identity = identities.get(0);
+        if (identity != null) {
+            identity.setType(type);
+        } else {
+            identity = new DiscoverInfo.Identity(DEFAULT_IDENTITY_CATEGORY, DEFAULT_IDENTITY_NAME, type);
+            identities.add(identity);                     
         }
     }
-
+    
     /**
-     * Get a DiscoverInfo for the current entity caps node.
-     *
-     * @return a DiscoverInfo for the current entity caps node
+     * Returns all identities of this client as unmodifiable Collection
+     * 
+     * @return
      */
-    public DiscoverInfo getOwnDiscoverInfo() {
-        DiscoverInfo di = new DiscoverInfo();
-        di.setType(IQ.Type.RESULT);
-        di.setNode(capsManager.getNode() + "#" + getEntityCapsVersion());
-
-        // Add discover info
-        addDiscoverInfoTo(di);
-
-        return di;
+    public static List<DiscoverInfo.Identity> getIdentities() {
+        return Collections.unmodifiableList(identities);
     }
 
     /**
@@ -246,21 +203,6 @@ public class ServiceDiscoveryManager {
                 // ignore
             }
         });
-
-        // Intercept presence packages and add caps data when intended.
-        // XEP-0115 specifies that a client SHOULD include entity capabilities
-        // with every presence notification it sends.
-        PacketFilter capsPacketFilter = new PacketTypeFilter(Presence.class);
-        PacketInterceptor packetInterceptor = new PacketInterceptor() {
-            public void interceptPacket(Packet packet) {
-                if (capsManager != null) {
-                    String ver = getEntityCapsVersion();
-                    CapsExtension caps = new CapsExtension(capsManager.getNode(), ver, "sha-1");
-                    packet.addExtension(caps);
-                }
-            }
-        };
-        connection.addPacketInterceptor(packetInterceptor, capsPacketFilter);
 
         // Listen for disco#items requests and answer with an empty result        
         PacketFilter packetFilter = new PacketTypeFilter(DiscoverItems.class);
@@ -312,12 +254,11 @@ public class ServiceDiscoveryManager {
                     response.setTo(discoverInfo.getFrom());
                     response.setPacketID(discoverInfo.getPacketID());
                     response.setNode(discoverInfo.getNode());
-                    // Add the client's identity and features if "node" is
-                    // null or our entity caps version.
-                    if (discoverInfo.getNode() == null || 
-                            capsManager == null ||
-                             (capsManager.getNode() + "#" +
-                              getEntityCapsVersion()).equals(discoverInfo.getNode())) {
+                    // Add the client's identity and features only if "node" is null
+                    // and if the request was not send to a node. If Entity Caps are
+                    // enabled the client's identity and features are may also added
+                    // if the right node is chosen
+                    if (discoverInfo.getNode() == null) {
                         addDiscoverInfoTo(response);
                     }
                     else {
@@ -353,6 +294,29 @@ public class ServiceDiscoveryManager {
             }
         };
         connection.addPacketListener(packetListener, packetFilter);
+    }
+    
+
+    /**
+     * Add discover info response data.
+     * 
+     * @see <a href="http://xmpp.org/extensions/xep-0030.html#info-basic">XEP-30 Basic Protocol; Example 2</a>
+     *
+     * @param response the discover info response packet
+     */
+    public void addDiscoverInfoTo(DiscoverInfo response) {
+        // First add the identities of the connection
+        response.addIdentities(identities);
+        
+        // Add the registered features to the response
+        synchronized (features) {
+            for (Iterator<String> it = getFeatures(); it.hasNext();) {
+                response.addFeature(it.next());
+            }
+            if (extendedInfo != null) {
+                response.addExtension(extendedInfo);
+            }
+        }
     }
 
     /**
@@ -476,8 +440,12 @@ public class ServiceDiscoveryManager {
      *            information.
      */
     public void setExtendedInfo(DataForm info) {
-        extendedInfo = info;
-        renewEntityCapsVersion();
+      extendedInfo = info;
+      renewEntityCapsVersion();
+    }
+    
+    public DataForm getExtendedInfo() {
+        return extendedInfo;
     }
 
     /**
@@ -488,73 +456,44 @@ public class ServiceDiscoveryManager {
      * operation before logging to the server.
      */
     public void removeExtendedInfo() {
-        extendedInfo = null;
-        renewEntityCapsVersion();
-    }
-
-    /**
-     * Returns the discovered information of a given XMPP entity addressed by its JID
-     * if it's known by the entity caps manager.
-     *
-     * @param entityID the address of the XMPP entity
-     * @return the disovered info or null if no such info is available from the
-     * entity caps manager.
-     * @throws XMPPException if the operation failed for some reason.
-     */
-    public DiscoverInfo discoverInfoByCaps(String entityID) throws XMPPException {
-        DiscoverInfo info = capsManager.getDiscoverInfoByUser(entityID);
-
-        if (info != null) {
-            DiscoverInfo newInfo = cloneDiscoverInfo(info);
-            newInfo.setFrom(entityID);
-            return newInfo;
-        }
-        else {
-            return null;
-        }
+       extendedInfo = null;
+       renewEntityCapsVersion();
     }
 
     /**
      * Returns the discovered information of a given XMPP entity addressed by its JID.
+     * Use null as entityID to query the server
      * 
-     * @param entityID the address of the XMPP entity.
+     * @param entityID the address of the XMPP entity or null.
      * @return the discovered information.
      * @throws XMPPException if the operation failed for some reason.
      */
     public DiscoverInfo discoverInfo(String entityID) throws XMPPException {
+        if (entityID == null)
+            return discoverInfo(null, null);
+        
         // Check if the have it cached in the Entity Capabilities Manager
-        DiscoverInfo info = discoverInfoByCaps(entityID);
+        DiscoverInfo info = EntityCapsManager.getDiscoverInfoByUser(entityID);
 
         if (info != null) {
+            // We were able to retrieve the information from Entity Caps and avoided a disco request, hurray!
             return info;
-        } else {
-            // If the caps node is known, use it in the request.
-            String node = null;
+        } 
 
-            if (capsManager != null) {
-                // Get the newest node#version
-                node = capsManager.getNodeVersionByUser(entityID);
-            }
+        // Try to get the newest node#version if it's known, otherwise null is returned
+        EntityCapsManager.NodeVerHash nvh = EntityCapsManager.getNodeVerHashByJid(entityID);
 
-			// Check if we cached DiscoverInfo for nonCaps entity
-			if (cacheNonCaps 
-					&& node == null
-					&& nonCapsCache.containsKey(entityID)) {
-				return nonCapsCache.get(entityID);
-			}
-            // Discover by requesting from the remote client
-            info = discoverInfo(entityID, node);
+        // Discover by requesting the information from the remote entity
+        // Note that wee need to use NodeVer as argument for Node if it exists
+        info = discoverInfo(entityID, nvh != null ? nvh.getNodeVer() : null);
 
-            // If the node version is known, store the new entry.
-            if (node != null && capsManager != null) {
-                EntityCapsManager.addDiscoverInfoByNode(node, info);
-            }
-            // If this is a non caps entity store the discover in nonCapsCache map
-            else if (cacheNonCaps && node == null) {
-            	nonCapsCache.put(entityID, info);
-            }
-            return info;
+        // If the node version is known, store the new entry.
+        if (nvh != null) {
+            if (EntityCapsManager.verifyDiscvoerInfoVersion(nvh.getVer(), nvh.getHash(), info))
+                EntityCapsManager.addDiscoverInfoByNode(nvh.getNodeVer(), info);
         }
+
+        return info;
     }
 
     /**
@@ -562,8 +501,11 @@ public class ServiceDiscoveryManager {
      * note attribute. Use this message only when trying to query information which is not 
      * directly addressable.
      * 
+     * @see <a href="http://xmpp.org/extensions/xep-0030.html#info-basic">XEP-30 Basic Protocol</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0030.html#info-nodes">XEP-30 Info Nodes</a>
+     * 
      * @param entityID the address of the XMPP entity.
-     * @param node the attribute that supplements the 'jid' attribute.
+     * @param node the optional attribute that supplements the 'jid' attribute.
      * @return the discovered information.
      * @throws XMPPException if the operation failed for some reason.
      */
@@ -610,7 +552,7 @@ public class ServiceDiscoveryManager {
      * directly addressable.
      * 
      * @param entityID the address of the XMPP entity.
-     * @param node the attribute that supplements the 'jid' attribute.
+     * @param node the optional attribute that supplements the 'jid' attribute.
      * @return the discovered items.
      * @throws XMPPException if the operation failed for some reason.
      */
@@ -653,20 +595,20 @@ public class ServiceDiscoveryManager {
     public boolean canPublishItems(String entityID) throws XMPPException {
         DiscoverInfo info = discoverInfo(entityID);
         return canPublishItems(info);
-    }
+     }
 
-    /**
-     * Returns true if the server supports publishing of items. A client may wish to publish items
-     * to the server so that the server can provide items associated to the client. These items will
-     * be returned by the server whenever the server receives a disco request targeted to the bare
-     * address of the client (i.e. user@host.com).
-     * 
-     * @param DiscoverInfo the discover info packet to check.
-     * @return true if the server supports publishing of items.
-     */
-    public static boolean canPublishItems(DiscoverInfo info) {
-        return info.containsFeature("http://jabber.org/protocol/disco#publish");
-    }
+     /**
+      * Returns true if the server supports publishing of items. A client may wish to publish items
+      * to the server so that the server can provide items associated to the client. These items will
+      * be returned by the server whenever the server receives a disco request targeted to the bare
+      * address of the client (i.e. user@host.com).
+      * 
+      * @param DiscoverInfo the discover info packet to check.
+      * @return true if the server supports publishing of items.
+      */
+     public static boolean canPublishItems(DiscoverInfo info) {
+         return info.containsFeature("http://jabber.org/protocol/disco#publish");
+     }
 
     /**
      * Publishes new items to a parent entity. The item elements to publish MUST have at least 
@@ -718,21 +660,17 @@ public class ServiceDiscoveryManager {
         }
     }
 
-    private DiscoverInfo cloneDiscoverInfo(DiscoverInfo disco) {
-        return disco.clone();
-    }
-
     /**
      * Entity Capabilities
      */
 
+    /**
+     * Loads the ServiceDiscoveryManager with an EntityCapsManger
+     * that speeds up certain lookups
+     * @param manager
+     */
     public void setEntityCapsManager(EntityCapsManager manager) {
         capsManager = manager;
-        if (connection.getCapsNode() != null 
-        		&& connection.getHost() != null) {
-        	capsManager.addUserCapsNode(connection.getHost(), connection.getCapsNode());
-        }
-        capsManager.addPacketListener(connection);
     }
 
     /**
@@ -740,27 +678,7 @@ public class ServiceDiscoveryManager {
      * if EntityCaps is enabled
      */
     private void renewEntityCapsVersion() {
-        // If a XMPPConnection is the managed one, see that the new
-        // version is updated
-        if (connection instanceof XMPPConnection) {
-            if (capsManager != null) {
-                capsManager.calculateEntityCapsVersion(getOwnDiscoverInfo(),
-                        identityType, identityName, extendedInfo);
-                //capsManager.notifyCapsVerListeners();
-            }
-        }
-    }
-
-    private String getEntityCapsVersion() {
-        if (capsManager != null) {
-            return capsManager.getCapsVersion();
-        }
-        else {
-            return null;
-        }
-    }
-    
-    public EntityCapsManager getEntityCapsManager(){
-    	return capsManager;
+        if (capsManager != null && capsManager.entityCapsEnabled())
+            capsManager.updateLocalEntityCaps();
     }
 }

@@ -1,5 +1,6 @@
 /**
  * Copyright 2009 Jonas Ådahl.
+ * Copyright 2011-2013 Florian Schmaus
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +18,27 @@
 package org.jivesoftware.smackx.entitycaps.packet;
 
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.entitycaps.EntityCapsManager;
 
 public class CapsExtension implements PacketExtension {
 
-    private String node, version, hash;
-    public static final String XMLNS = "http://jabber.org/protocol/caps";
-    public static final String NODE_NAME = "c";
+    private String node, ver, hash;
 
     public CapsExtension() {
     }
 
     public CapsExtension(String node, String version, String hash) {
         this.node = node;
-        this.version = version;
+        this.ver = version;
         this.hash = hash;
     }
 
     public String getElementName() {
-        return NODE_NAME;
+        return EntityCapsManager.ELEMENT;
     }
 
     public String getNamespace() {
-        return XMLNS;
+        return EntityCapsManager.NAMESPACE;
     }
 
     public String getNode() {
@@ -49,12 +49,12 @@ public class CapsExtension implements PacketExtension {
         this.node = node;
     }
 
-    public String getVersion() {
-        return version;
+    public String getVer() {
+        return ver;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setVer(String ver) {
+        this.ver = ver;
     }
 
     public String getHash() {
@@ -66,17 +66,17 @@ public class CapsExtension implements PacketExtension {
     }
 
     /*
-     *  <c xmlns='http://jabber.org/protocol/caps' 
+     *  <c xmlns='http://jabber.org/protocol/caps'
      *  hash='sha-1'
      *  node='http://code.google.com/p/exodus'
      *  ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>
-     *  
+     *
      */
     public String toXML() {
-        String xml = "<c xmlns='" + XMLNS + "' " +
+        String xml = "<c xmlns='" + EntityCapsManager.NAMESPACE + "' " +
             "hash='" + hash + "' " +
             "node='" + node + "' " +
-            "ver='" + version + "'/>";
+            "ver='" + ver + "'/>";
 
         return xml;
     }

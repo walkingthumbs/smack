@@ -11,8 +11,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jivesoftware.smackx.entitycaps;
+package org.jivesoftware.smackx.entitycaps.cache;
 
-public interface CapsVerListener {
-    public void capsVerUpdated(String capsVer);
+import java.io.IOException;
+
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+
+public interface EntityCapsPersistentCache {
+    /**
+     * Add an DiscoverInfo to the persistent Cache
+     * 
+     * @param node
+     * @param info
+     */
+    abstract void addDiscoverInfoByNodePersistent(String node, DiscoverInfo info);
+
+    /**
+     * Replay the Caches data into EntityCapsManager
+     */
+    abstract void replay() throws IOException;
+
+    /**
+     * Empty the Cache
+     */
+    abstract void emptyCache();
 }

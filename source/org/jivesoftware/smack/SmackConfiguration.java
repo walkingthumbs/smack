@@ -59,6 +59,8 @@ public final class SmackConfiguration {
     private static int packetCollectorSize = 5000;
 
     private static int defaultPingInterval = 1800000; // 30 min (30*60*1000)
+    
+    private static boolean autoEnableEntityCaps = false;
 
     private SmackConfiguration() {
     }
@@ -109,8 +111,11 @@ public final class SmackConfiguration {
                                 else if (parser.getName().equals("packetCollectorSize")) {
                                     packetCollectorSize = parseIntProperty(parser, packetCollectorSize);
                                 }
- else if (parser.getName().equals("defaultPingInterval")) {
+                                else if (parser.getName().equals("defaultPingInterval")) {
                                     defaultPingInterval = parseIntProperty(parser, defaultPingInterval);
+                                }
+                                else if (parser.getName().equals("autoEnableEntityCaps")) {
+                                    autoEnableEntityCaps = Boolean.parseBoolean(parser.nextText());
                                 }
                             }
                             eventType = parser.next();
@@ -314,6 +319,14 @@ public final class SmackConfiguration {
 
     public static void setDefaultPingInterval(int defaultPingInterval) {
         SmackConfiguration.defaultPingInterval = defaultPingInterval;
+    }
+
+    public static boolean autoEnableEntityCaps() {
+        return autoEnableEntityCaps;
+    }
+    
+    public static void setAutoEnableEntityCaps(boolean b) {
+        autoEnableEntityCaps = b;
     }
 
     private static void parseClassToLoad(XmlPullParser parser) throws Exception {
