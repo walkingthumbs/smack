@@ -48,4 +48,3 @@ public class SharedGroupsTest extends SmackTestCase {
         return 1;
     }
 }
-

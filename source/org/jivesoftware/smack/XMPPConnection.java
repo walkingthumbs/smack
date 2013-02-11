@@ -1036,8 +1036,4 @@ public class XMPPConnection extends Connection {
 		}
 		this.rosterStorage = storage;
 	}
-	
-	public boolean isEntityCapsEnabled() {
-		return config.isEntityCapsEnabled();
-	}
 }

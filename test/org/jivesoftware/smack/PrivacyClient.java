@@ -59,4 +59,3 @@ public class PrivacyClient implements PrivacyListListener {
         return this.wasModified;
     }
 }
-

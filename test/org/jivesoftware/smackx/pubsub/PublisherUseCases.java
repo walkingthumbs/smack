@@ -165,4 +165,3 @@ public class PublisherUseCases extends SingleUserTestCase
 		assertEquals("1", items.get(0).getId());
 	}
 }
-

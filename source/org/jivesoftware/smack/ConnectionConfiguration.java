@@ -745,31 +745,6 @@ public class ConnectionConfiguration implements Cloneable {
     void setRosterVersioningAvailable(boolean enabled){
     	isRosterVersioningAvailable = enabled;
     }
-    
-    boolean isEntityCapsEnabled() {
-    	return enableEntityCaps;
-    }
-    
-    /**
-     * Enable or disable Entity Capabilities (XEP-115)
-     * http://xmpp.org/extensions/xep-0115.html
-     * 
-     * Only available on XMPPConnection
-     * default is enabled
-     * 
-     * @param enabled
-     */
-    void setEntityCaps(boolean enabled) {
-    	enableEntityCaps = enabled;
-    }
-    
-    void setCapsNode(String node){
-    	capsNode = node;
-    }
-    
-    String getCapsNode(){
-    	return capsNode;
-    }
 
     /**
      * Returns true if an available presence should be sent when logging in while reconnecting.

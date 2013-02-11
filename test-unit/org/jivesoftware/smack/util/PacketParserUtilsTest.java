@@ -27,20 +27,13 @@ import org.custommonkey.xmlunit.Diff;
 import org.jivesoftware.smack.TestUtils;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
-
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.packet.DelayInformation;
 import org.junit.Ignore;
-
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.jamesmurty.utils.XMLBuilder;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Locale;
-import java.util.Properties;
 
 /**
  *
@@ -48,7 +41,7 @@ import java.util.Properties;
 public class PacketParserUtilsTest {
     
     private static Properties outputProperties = new Properties();
-    static {
+    {
         outputProperties.put(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes");
     }
         
@@ -730,6 +723,7 @@ public class PacketParserUtilsTest {
 
     }
 
+    @Ignore
     @Test
     public void multipleMessageBodiesParsingTest() throws Exception {
         String control = XMLBuilder.create("message")
@@ -749,7 +743,6 @@ public class PacketParserUtilsTest {
                 .a("xml:lang", "sp")
                 .t("This is a test of the emergency broadcast system, 3.")
             .asString(outputProperties);
-
         
         Packet message = PacketParserUtils.parseMessage(TestUtils.getMessageParser(control));
         assertXMLEqual(control, message.toXML());

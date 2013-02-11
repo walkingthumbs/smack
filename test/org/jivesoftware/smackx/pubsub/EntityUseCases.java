@@ -88,4 +88,3 @@ public class EntityUseCases extends SingleUserTestCase
 		getManager().getAffiliations();
 	}
 }
-

@@ -30,7 +30,6 @@ import javax.net.SocketFactory;
 import junit.framework.TestCase;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.ConnectionUtils;
@@ -341,7 +340,7 @@ public abstract class SmackTestCase extends TestCase {
                 try {
                     // If not connected, connect so that we can delete the account.
                     if (!getConnection(i).isConnected()) {
-                    Connection con = getConnection(i);
+                        XMPPConnection con = getConnection(i);
                         con.connect();
                         con.login(getUsername(i), getUsername(i));
                     }

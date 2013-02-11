@@ -237,4 +237,5 @@ public class ReconnectionTest extends SmackTestCase {
             reconnectionFailed = true;
         }
     }
+
 }
