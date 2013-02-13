@@ -57,7 +57,7 @@ public class DiscoverItems extends IQ {
     }
 
     /**
-     * Adds a collection of items to the discovered information
+     * Adds a collection of items to the discovered information. Does nothing if itemsToAdd is null
      *
      * @param itemsToAdd
      */
