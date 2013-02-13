@@ -197,7 +197,7 @@ public abstract class Connection {
      * Holds the initial configuration used while creating the connection.
      */
     protected final ConnectionConfiguration config;
-    
+
     private String serviceCapsNode;
 
     /**
@@ -805,20 +805,20 @@ public abstract class Connection {
     /**
      * Set the servers Entity Caps node
      * 
-     * Connection holds this information in order to avoid a dependency to smackx
-     * where EntityCapsManager lives from smack.
+     * Connection holds this information in order to avoid a dependency to
+     * smackx where EntityCapsManager lives from smack.
      * 
      * @param node
      */
     protected void setServiceCapsNode(String node) {
         serviceCapsNode = node;
     }
-    
+
     /**
      * Retrieve the servers Entity Caps node
      * 
-     * Connection holds this information in order to avoid a dependency to smackx
-     * where EntityCapsManager lives from smack.
+     * Connection holds this information in order to avoid a dependency to
+     * smackx where EntityCapsManager lives from smack.
      * 
      * @return
      */
