@@ -22,6 +22,7 @@ package org.jivesoftware.smack;
 
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.util.DNSUtil;
+import org.jivesoftware.smack.util.dns.HostAddress;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -61,8 +62,6 @@ public class ConnectionConfiguration implements Cloneable {
     private boolean expiredCertificatesCheckEnabled = false;
     private boolean notMatchingDomainCheckEnabled = false;
     private boolean isRosterVersioningAvailable = false;
-    private boolean enableEntityCaps = true;
-    private String capsNode = null;
     private SSLContext customSSLContext;
 
     private boolean compressionEnabled = false;
@@ -101,8 +100,8 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public ConnectionConfiguration(String serviceName) {
         // Perform DNS lookup to get host and port to use
-        DNSUtil.HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getHost(), address.getPort(), serviceName, 
+        HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
+        init(address.getFQDN(), address.getPort(), serviceName, 
 			ProxyInfo.forDefaultProxy());
     }
 	
@@ -124,8 +123,8 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public ConnectionConfiguration(String serviceName,ProxyInfo proxy) {
         // Perform DNS lookup to get host and port to use
-        DNSUtil.HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getHost(), address.getPort(), serviceName, proxy);
+        HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
+        init(address.getFQDN(), address.getPort(), serviceName, proxy);
     }
 
     /**
