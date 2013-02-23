@@ -28,6 +28,9 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.security.auth.callback.CallbackHandler;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Configuration to use while establishing the connection to the server. It is possible to
@@ -49,6 +52,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     private String host;
     private int port;
+    private List<HostAddress> hostAddresses;
 
     private String truststorePath;
     private String truststoreType;
@@ -100,9 +104,8 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public ConnectionConfiguration(String serviceName) {
         // Perform DNS lookup to get host and port to use
-        HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getFQDN(), address.getPort(), serviceName, 
-			ProxyInfo.forDefaultProxy());
+        hostAddresses = DNSUtil.resolveXMPPDomain(serviceName);
+        init(serviceName, ProxyInfo.forDefaultProxy());
     }
 	
     /**
@@ -123,8 +126,8 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public ConnectionConfiguration(String serviceName,ProxyInfo proxy) {
         // Perform DNS lookup to get host and port to use
-        HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getFQDN(), address.getPort(), serviceName, proxy);
+        hostAddresses = DNSUtil.resolveXMPPDomain(serviceName);
+        init(serviceName, proxy);
     }
 
     /**
@@ -142,7 +145,8 @@ public class ConnectionConfiguration implements Cloneable {
      * @param serviceName the name of the service provided by an XMPP server.
      */
     public ConnectionConfiguration(String host, int port, String serviceName) {
-        init(host, port, serviceName, ProxyInfo.forDefaultProxy());
+        initHostAddresses(host, port);
+        init(serviceName, ProxyInfo.forDefaultProxy());
     }
 	
 	/**
@@ -161,7 +165,8 @@ public class ConnectionConfiguration implements Cloneable {
      * @param proxy the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, String serviceName, ProxyInfo proxy) {
-        init(host, port, serviceName, proxy);
+        initHostAddresses(host, port);
+        init(serviceName, proxy);
     }
 
     /**
@@ -172,7 +177,8 @@ public class ConnectionConfiguration implements Cloneable {
      * @param port the port where the XMPP is listening.
      */
     public ConnectionConfiguration(String host, int port) {
-        init(host, port, host, ProxyInfo.forDefaultProxy());
+        initHostAddresses(host, port);
+        init(host, ProxyInfo.forDefaultProxy());
     }
 	
 	/**
@@ -184,12 +190,11 @@ public class ConnectionConfiguration implements Cloneable {
      * @param proxy the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, ProxyInfo proxy) {
-        init(host, port, host, proxy);
+        initHostAddresses(host, port);
+        init(host, proxy);
     }
 
-    protected void init(String host, int port, String serviceName, ProxyInfo proxy) {
-        this.host = host;
-        this.port = port;
+    private void init(String serviceName, ProxyInfo proxy) {
         this.serviceName = serviceName;
         this.proxy = proxy;
 
@@ -250,6 +255,11 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public int getPort() {
         return port;
+    }
+
+    public void setUsedHostAddress(HostAddress hostAddress) {
+        this.host = hostAddress.getFQDN();
+        this.port = hostAddress.getPort();
     }
 
     /**
@@ -683,6 +693,10 @@ public class ConnectionConfiguration implements Cloneable {
         return this.socketFactory;
     }
 
+    public List<HostAddress> getHostAddresses() {
+        return Collections.unmodifiableList(hostAddresses);
+    }
+
     /**
      * An enumeration for TLS security modes that are available when making a connection
      * to the XMPP server.
@@ -758,5 +772,16 @@ public class ConnectionConfiguration implements Cloneable {
         this.username = username;
         this.password = password;
         this.resource = resource;
+    }
+
+    private void initHostAddresses(String host, int port) {
+        hostAddresses = new ArrayList<HostAddress>(1);
+        HostAddress hostAddress;
+        try {
+             hostAddress = new HostAddress(host, port);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+        hostAddresses.add(hostAddress);
     }
 }
