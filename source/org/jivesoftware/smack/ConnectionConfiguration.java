@@ -513,17 +513,17 @@ public class ConnectionConfiguration implements Cloneable {
      * @return the SSLContext previously set with setCustomSSLContext() or null.
      */
     public SSLContext getCustomSSLContext() {
-	    return this.customSSLContext;
+        return this.customSSLContext;
     }
 
     /**
      * Sets a custom SSLContext for creating SSL sockets. A custom Context causes all other
      * SSL/TLS realted settings to be ignored.
      *
-     * @param context the custom SSLContext for new sockets; null to reset default behaviour.
+     * @param context the custom SSLContext for new sockets; null to reset default behavior.
      */
     public void setCustomSSLContext(SSLContext context) {
-	    this.customSSLContext = context;
+        this.customSSLContext = context;
     }
 
     /**
