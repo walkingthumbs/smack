@@ -97,6 +97,10 @@ public class XMPPConnection extends Connection {
      */
     private Collection<String> compressionMethods;
 
+    /**
+     * Set to true by packet writer if the server acknowledged the compression
+     */
+    private boolean serverAckdCompression = false;
 
     /**
      * Creates a new connection to the specified XMPP server. A DNS SRV lookup will be
@@ -592,7 +596,10 @@ public class XMPPConnection extends Connection {
      */
     private void initConnection() throws XMPPException {
         boolean isFirstInitialization = packetReader == null || packetWriter == null;
-        compressionHandler = null;
+        if (!isFirstInitialization) {
+            compressionHandler = null;
+            serverAckdCompression = false;
+        }
 
         // Set the reader and writer instance variables
         initReaderAndWriter();
@@ -882,12 +889,12 @@ public class XMPPConnection extends Connection {
     }
 
     /**
-     * Returns true if the specified compression method was offered by the server.
-     *
-     * @param method the method to check.
-     * @return string the method to use for compression
+     * Returns the compression handler that can be used for one compression methods offered by the server.
+     * 
+     * @return a instance of XMPPInputOutputStream or null if no suitable instance was found
+     * 
      */
-    private XMPPInputOutputStream hasAvailableCompressionMethods() {
+    private XMPPInputOutputStream maybeGetCompressionHandler() {
         if (compressionMethods != null) {
             for (XMPPInputOutputStream handler : compressionHandlers) {
                 if (!handler.isSupported())
@@ -902,7 +909,7 @@ public class XMPPConnection extends Connection {
     }
 
     public boolean isUsingCompression() {
-        return compressionHandler != null;
+        return compressionHandler != null && serverAckdCompression;
     }
 
     /**
@@ -926,7 +933,7 @@ public class XMPPConnection extends Connection {
             throw new IllegalStateException("Compression should be negotiated before authentication.");
         }
 
-        if ((compressionHandler = hasAvailableCompressionMethods()) != null) {
+        if ((compressionHandler = maybeGetCompressionHandler()) != null) {
             requestStreamCompression(compressionHandler.getCompressionMethod());
             // Wait until compression is being used or a timeout happened
             synchronized (this) {
@@ -964,6 +971,7 @@ public class XMPPConnection extends Connection {
      * @throws Exception if there is an exception starting stream compression.
      */
     void startStreamCompression() throws Exception {
+        serverAckdCompression = true;
         // Initialize the reader and writer with the new secured version
         initReaderAndWriter();
 

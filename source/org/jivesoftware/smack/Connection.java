@@ -123,7 +123,9 @@ public abstract class Connection {
         }
         // Ensure the SmackConfiguration class is loaded by calling a method in it.
         SmackConfiguration.getVersion();
+        // Add the Java7 compression handler first, since it's preferred
         compressionHandlers.add(new Java7ZlibInputOutputStream());
+        // If we don't have access to the Java7 API use the JZlib compression handler
         compressionHandlers.add(new JzlibInputOutputStream());
     }
 

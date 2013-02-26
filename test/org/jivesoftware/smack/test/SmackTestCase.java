@@ -443,6 +443,9 @@ public abstract class SmackTestCase extends TestCase {
                     else if (parser.getName().equals("compressionEnabled")) {
                         compressionEnabled = "true".equals(parser.nextText());
                     }
+                    else if (parser.getName().equals("compressionEnabled")) {
+                        compressionEnabled = "true".equals(parser.nextText());
+                    }
                 }
                 eventType = parser.next();
             }

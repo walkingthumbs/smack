@@ -22,12 +22,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * This class provides XMPP "zlib" compression with the help of JZLib.
- * Note that jzlib-1.0.7 must be used, newer versions won't work!
+ * This class provides XMPP "zlib" compression with the help of JZLib. Note that jzlib-1.0.7 must be used (i.e. in the
+ * classpath), newer versions won't work!
  * 
  * @author Florian Schmaus
  * @see <a href="http://www.jcraft.com/jzlib/">JZLib</a>
- *
+ * 
  */
 public class JzlibInputOutputStream extends XMPPInputOutputStream {
 
