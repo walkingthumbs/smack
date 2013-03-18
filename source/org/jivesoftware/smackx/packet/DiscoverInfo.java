@@ -339,10 +339,14 @@ public class DiscoverInfo extends IQ {
         public String toXML() {
             StringBuilder buf = new StringBuilder();
             buf.append("<identity");
+            // Check if this packet has 'lang' set and maybe append it to the resulting string
             if (lang != null)
                 buf.append(" xml:lang=\"").append(StringUtils.escapeForXML(lang)).append("\"");
+            // Category must always be set
             buf.append(" category=\"").append(StringUtils.escapeForXML(category)).append("\"");
+            // Name must always be set
             buf.append(" name=\"").append(StringUtils.escapeForXML(name)).append("\"");
+            // Check if this packet has 'type' set and maybe append it to the resulting string
             if (type != null) {
                 buf.append(" type=\"").append(StringUtils.escapeForXML(type)).append("\"");
             }

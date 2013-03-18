@@ -209,6 +209,9 @@ public abstract class Connection {
      */
     protected final ConnectionConfiguration config;
 
+    /**
+     * Holds the Caps Node information for the used XMPP service (i.e. the XMPP server)
+     */
     private String serviceCapsNode;
 
     protected XMPPInputOutputStream compressionHandler;

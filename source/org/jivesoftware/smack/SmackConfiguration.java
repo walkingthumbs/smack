@@ -62,6 +62,9 @@ public final class SmackConfiguration {
      */
     private static int defaultPingInterval = 1800; // 30 min (30*60)
 
+    /**
+     * This automatically enables EntityCaps for new connections if it is set to true
+     */
     private static boolean autoEnableEntityCaps = false;
 
     private SmackConfiguration() {
