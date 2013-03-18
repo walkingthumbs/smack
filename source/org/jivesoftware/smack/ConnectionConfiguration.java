@@ -107,15 +107,15 @@ public class ConnectionConfiguration implements Cloneable {
         hostAddresses = DNSUtil.resolveXMPPDomain(serviceName);
         init(serviceName, ProxyInfo.forDefaultProxy());
     }
-	
+
     /**
      * 
      */
     protected ConnectionConfiguration() {
       /* Does nothing */	
     }
-    
-	/**
+
+    /**
      * Creates a new ConnectionConfiguration for the specified service name 
      * with specified proxy.
      * A DNS SRV lookup will be performed to find out the actual host address
