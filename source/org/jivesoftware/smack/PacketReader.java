@@ -98,7 +98,7 @@ class PacketReader {
      */
     synchronized public void startup() throws XMPPException {
         readerThread.start();
-        // Wait for stream tag before returing. We'll wait a couple of seconds before
+        // Wait for stream tag before returning. We'll wait a couple of seconds before
         // giving up and throwing an error.
         try {
             // A waiting thread may be woken up before the wait time or a notify
