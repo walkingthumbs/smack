@@ -8,27 +8,21 @@ Branches
 - master
 - xep0198
 - upstream
-- caps
 - smack-aiv smack from [a-iv](https://github.com/a-iv), who contributed here too.
 - dnssec (DNSSEC patches on top of master)
 - maybe some other branches to test new patches
 
 master
 --------------
-The current state of Smack, plus additional patches.
+The current state of Smack trunk, plus additional patches.
 
 ### Additional non-upstream (yet) patches
 Here's a list of patches that are included in master. If there is a issue on the offical smack bugtracker, it will be linked too. The issue reports usually contain also a link to Smack's community forums, where more information about the issue can be found.
 
-- Fix for [SMACK-278 Deadlock during Smack disconnect](http://issues.igniterealtime.org/browse/SMACK-278)
-- Fix for [SMACK-371](http://issues.igniterealtime.org/browse/SMACK-371) Update MUC to the current spec (Prospody MUC support)
-- Fix for [SMACK-270](http://issues.igniterealtime.org/browse/SMACK-270) Memory leak in MUC with finalize()
-- Entity Capabilites support [SMACK-361](http://issues.igniterealtime.org/browse/SMACK-361)
-- [Roster Versioning XEP-0237](http://xmpp.org/extensions/xep-0237.html)
+- [Roster Versioning XEP-0237](http://xmpp.org/extensions/xep-0237.html) [SMACK-399](http://issues.igniterealtime.org/browse/SMACK-399)
 - BOSH support (XMPP over HTTP aka. HTTP Binding) [SMACK-187](http://issues.igniterealtime.org/browse/SMACK-187)
 - Fix for [SMACK-384 Endless waiting for connection to be established](http://issues.igniterealtime.org/browse/SMACK-384)
-- Fix for [SMACK-383 Connection can't be collected by GC](http://issues.igniterealtime.org/browse/SMACK-383)
-- Some more fixes I can't remeber atm
+- Maybe some more fixes I can't remeber right now.
 
 xep0198
 ----------------------
@@ -37,10 +31,6 @@ In sync with master plus XEP-0198 patches from devrandom (gibberbot)
 upstream
 --------
 The current state of the vanilla SMACK (upstream) development.
-
-caps
-----
-An Entity Capsabilities implementation on top of vanilla smack. Similar to the one found in master. Test cases are missing and are maybe the only reason this hasn't gone upstream yet.
 
 dnssec
 ------
