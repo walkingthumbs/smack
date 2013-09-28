@@ -955,25 +955,25 @@ public class Roster {
      *
      */
     
-    private class RosterResultListener implements PacketListener{
+    private class RosterResultListener implements PacketListener {
 
-		public void processPacket(Packet packet) {
-			if(packet instanceof IQ){
-				IQ result = (IQ)packet;
-				if(result.getType().equals(IQ.Type.RESULT) && result.getExtensions().isEmpty()){
-					Collection<String> addedEntries = new ArrayList<String>();
-		            Collection<String> updatedEntries = new ArrayList<String>();
-		            Collection<String> deletedEntries = new ArrayList<String>();
-		            if(persistentStorage!=null){
-		            	for(RosterPacket.Item item : persistentStorage.getEntries()){
-		            		insertRosterItem(item,addedEntries,updatedEntries,deletedEntries);
-		            	}
-                            }
-		            fireRosterChangedEvent(addedEntries,updatedEntries,deletedEntries);
-			    }
-			}
-			connection.removePacketListener(this);
-		}
+        public void processPacket(Packet packet) {
+            if (packet instanceof IQ) {
+                IQ result = (IQ) packet;
+                if (result.getType().equals(IQ.Type.RESULT) && result.getExtensions().isEmpty()) {
+                    Collection<String> addedEntries = new ArrayList<String>();
+                    Collection<String> updatedEntries = new ArrayList<String>();
+                    Collection<String> deletedEntries = new ArrayList<String>();
+                    if (persistentStorage != null) {
+                        for (RosterPacket.Item item : persistentStorage.getEntries()) {
+                            insertRosterItem(item, addedEntries, updatedEntries, deletedEntries);
+                        }
+                    }
+                    fireRosterChangedEvent(addedEntries, updatedEntries, deletedEntries);
+                }
+            }
+            connection.removePacketListener(this);
+        }
     }
 
     /**
