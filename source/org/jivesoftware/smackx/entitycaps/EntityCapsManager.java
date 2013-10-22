@@ -235,9 +235,7 @@ public class EntityCapsManager {
 
         connection.addConnectionListener(new ConnectionListener() {
             public void connectionClosed() {
-                // Unregister this instance since the connection has been closed
                 presenceSend = false;
-                instances.remove(weakRefConnection.get());
             }
 
             public void connectionClosedOnError(Exception e) {

@@ -14,7 +14,6 @@
 package org.jivesoftware.smackx.bytestreams.socks5;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,24 +90,27 @@ public final class Socks5BytestreamManager implements BytestreamManager {
         Connection.addConnectionCreationListener(new ConnectionCreationListener() {
 
             public void connectionCreated(final Connection connection) {
-                final Socks5BytestreamManager manager;
-                manager = Socks5BytestreamManager.getBytestreamManager(connection);
+                // create the manager for this connection
+                Socks5BytestreamManager.getBytestreamManager(connection);
 
                 // register shutdown listener
                 connection.addConnectionListener(new AbstractConnectionListener() {
 
+                    @Override
                     public void connectionClosed() {
-                        manager.disableService();
-                    }
-                    
-                    public void connectionClosedOnError(Exception e) {
-                        manager.disableService();
-                    }
-                    
-                    public void reconnectionSuccessful() {
-                        managers.put(connection, manager);
+                        Socks5BytestreamManager.getBytestreamManager(connection).disableService();
                     }
 
+                    @Override
+                    public void connectionClosedOnError(Exception e) {
+                        Socks5BytestreamManager.getBytestreamManager(connection).disableService();
+                    }
+
+                    @Override
+                    public void reconnectionSuccessful() {
+                        // re-create the manager for this connection
+                        Socks5BytestreamManager.getBytestreamManager(connection);
+                    }
                 });
             }
 
@@ -277,7 +279,7 @@ public final class Socks5BytestreamManager implements BytestreamManager {
     /**
      * Disables the SOCKS5 Bytestream manager by removing the SOCKS5 Bytestream feature from the
      * service discovery, disabling the listener for SOCKS5 Bytestream initiation requests and
-     * resetting its internal state.
+     * resetting its internal state, which includes removing this instance from the managers map.
      * <p>
      * To re-enable the SOCKS5 Bytestream feature invoke {@link #getBytestreamManager(Connection)}.
      * Using the file transfer API will automatically re-enable the SOCKS5 Bytestream feature.
