@@ -73,7 +73,7 @@ public class ServiceDiscoveryManager {
     static {
         Connection.addConnectionCreationListener(new ConnectionCreationListener() {
             public void connectionCreated(Connection connection) {
-                new ServiceDiscoveryManager(connection);
+                getInstanceFor(connection);
             }
         });
     }
