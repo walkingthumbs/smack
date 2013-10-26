@@ -448,16 +448,6 @@ public class BOSHConnection extends Connection {
         }
         shutdown(unavailablePresence);
 
-        // Cleanup
-        if (roster != null) {
-            roster.cleanup();
-            roster = null;
-        }
-        sendListeners.clear();
-        recvListeners.clear();
-        collectors.clear();
-        interceptors.clear();
-
         // Reset the connection flags
         wasAuthenticated = false;
         isFirstInitialization = true;
