@@ -61,18 +61,19 @@ public class PingManager {
     public static final String ELEMENT = "ping";
     
 
-    private static Map<Connection, PingManager> instances =
+    private static final Map<Connection, PingManager> instances =
             Collections.synchronizedMap(new WeakHashMap<Connection, PingManager>());
+    private static final ScheduledExecutorService periodicPingExecutorService = new ScheduledThreadPoolExecutor(
+                    1);
     
     static {
         Connection.addConnectionCreationListener(new ConnectionCreationListener() {
             public void connectionCreated(Connection connection) {
-                new PingManager(connection);
+                getInstanceFor(connection);
             }
         });
     }
     
-    private ScheduledExecutorService periodicPingExecutorService;
     private Connection connection;
     private int pingInterval = SmackConfiguration.getDefaultPingInterval();
     private Set<PingFailedListener> pingFailedListeners = Collections
@@ -89,15 +90,13 @@ public class PingManager {
     // Note, no need to synchronize this value, it will only increase over time
     private long lastSuccessfulManualPing = -1;
     
-    private PingManager(Connection connection) {
+    private PingManager(final Connection connection) {
+        this.connection = connection;
+        instances.put(connection, this);
+
         ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(connection);
         sdm.addFeature(NAMESPACE);
-        this.connection = connection;
-        init();
-    }
-    
-    private void init() {
-        periodicPingExecutorService = new ScheduledThreadPoolExecutor(1);
+
         PacketFilter pingPacketFilter = new PacketTypeFilter(Ping.class);
         connection.addPacketListener(new PacketListener() {
             /**
@@ -143,11 +142,10 @@ public class PingManager {
             public void reconnectionFailed(Exception e) {
             }
         });
-        instances.put(connection, this);
         maybeSchedulePingServerTask();
     }
 
-    public static PingManager getInstanceFor(Connection connection) {
+    public static synchronized PingManager getInstanceFor(Connection connection) {
         PingManager pingManager = instances.get(connection);
         
         if (pingManager == null) {
