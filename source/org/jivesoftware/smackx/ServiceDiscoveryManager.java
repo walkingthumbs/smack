@@ -211,6 +211,7 @@ public class ServiceDiscoveryManager {
      */
     public void setIdentityName(String name) {
         identity.setName(name);
+        renewEntityCapsVersion();
     }
 
     /**
@@ -235,6 +236,7 @@ public class ServiceDiscoveryManager {
      */
     public void setIdentityType(String type) {
         identity.setType(type);
+        renewEntityCapsVersion();
     }
     
     /**
@@ -244,6 +246,7 @@ public class ServiceDiscoveryManager {
      */
     public void addIdentity(DiscoverInfo.Identity identity) {
         identities.add(identity);
+        renewEntityCapsVersion();
     }
     
     /**
@@ -256,6 +259,7 @@ public class ServiceDiscoveryManager {
     public boolean removeIdentity(DiscoverInfo.Identity identity) {
         if (identity.equals(this.identity)) return false;
         identities.remove(identity);
+        renewEntityCapsVersion();
         return true;
     }
 
@@ -294,7 +298,7 @@ public class ServiceDiscoveryManager {
      */
     public void addDiscoverInfoTo(DiscoverInfo response) {
         // First add the identities of the connection
-        response.addIdentities(identities);
+        response.addIdentities(getIdentities());
 
         // Add the registered features to the response
         synchronized (features) {
