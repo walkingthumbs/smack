@@ -753,7 +753,12 @@ public class BOSHConnection extends Connection {
 
         public void run() {
             for (ListenerWrapper listenerWrapper : recvListeners.values()) {
-                listenerWrapper.notifyListener(packet);
+                try {
+                    listenerWrapper.notifyListener(packet);
+                } catch (Exception e) {
+                    System.err.println("Exception in packet listener: " + e);
+                    e.printStackTrace();
+                }
             }
         }
     }
