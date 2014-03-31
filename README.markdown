@@ -1,3 +1,5 @@
+Legacy fork
+
 About
 =====
 This repository contains an extended version of [Smack](http://www.igniterealtime.org/projects/smack/). It's primary used by [aSmack](https://github.com/Flowdalic/asmack), to build an Android version of Smack. But since aSmack just changes some stuff and adds patches on top of a Smack branch, these branches can be used also in non-Android environments.
