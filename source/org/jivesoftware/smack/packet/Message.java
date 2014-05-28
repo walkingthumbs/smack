@@ -20,9 +20,16 @@
 
 package org.jivesoftware.smack.packet;
 
-import org.jivesoftware.smack.util.StringUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.jivesoftware.smack.util.StringUtils;
 
 /**
  * Represents XMPP message packets. A message can be one of several types:
@@ -54,6 +61,7 @@ public class Message extends Packet {
     private String thread = null;
     private String language;
 
+    private final Map<String, String> attributes = new HashMap<String, String>();
     private final Set<Subject> subjects = new HashSet<Subject>();
     private final Set<Body> bodies = new HashSet<Body>();
 
@@ -105,8 +113,30 @@ public class Message extends Packet {
         }
         this.type = type;
     }
+    
+    /**
+     * Returns the value of the given name, or null if the name is not an attribute.
+     * @param name
+     * @return the given name, or null if the name is not an attribute.
+     */
+    public String getAttributeValue(String name) {
+    	return attributes.get(name);
+    }
 
     /**
+     * Returns the attributes that are a part of the message element.
+     * 
+     * @return the attribute map of the message element.
+     */
+    public Map<String, String> getAttributes() {
+		return attributes;
+	}
+    
+    public void addAttribute(String name, String value) {
+    	attributes.put(name, value);
+    }
+
+	/**
      * Returns the default subject of the message, or null if the subject has not been set.
      * The subject is a short description of message contents.
      * <p>
@@ -404,7 +434,8 @@ public class Message extends Packet {
         
     }
 
-    public String toXML() {
+    @Override
+	public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<message");
         if (getXmlns() != null) {
@@ -425,6 +456,9 @@ public class Message extends Packet {
         if (type != Type.normal) {
             buf.append(" type=\"").append(type).append("\"");
         }
+        for(String name : attributes.keySet()) { 
+        	buf.append(" " + name + "=\"").append(attributes.get(name)).append("\"");
+        }
         buf.append(">");
         // Add the subject in the default language
         Subject defaultSubject = getMessageSubject(null);
@@ -434,8 +468,9 @@ public class Message extends Packet {
         // Add the subject in other languages
         for (Subject subject : getSubjects()) {
             // Skip the default language
-            if(subject.equals(defaultSubject))
-                continue;
+            if(subject.equals(defaultSubject)) {
+				continue;
+			}
             buf.append("<subject xml:lang=\"").append(subject.language).append("\">");
             buf.append(StringUtils.escapeForXML(subject.subject));
             buf.append("</subject>");
@@ -448,8 +483,9 @@ public class Message extends Packet {
         // Add the bodies in other languages
         for (Body body : getBodies()) {
             // Skip the default language
-            if(body.equals(defaultBody))
-                continue;
+            if(body.equals(defaultBody)) {
+				continue;
+			}
             buf.append("<body xml:lang=\"").append(body.getLanguage()).append("\">");
             buf.append(StringUtils.escapeForXML(body.getMessage()));
             buf.append("</body>");
@@ -471,9 +507,14 @@ public class Message extends Packet {
     }
 
 
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Override
+	public boolean equals(Object o) {
+        if (this == o) {
+			return true;
+		}
+        if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
         Message message = (Message) o;
 
@@ -490,16 +531,21 @@ public class Message extends Packet {
         if (thread != null ? !thread.equals(message.thread) : message.thread != null) {
             return false;
         }
+        if(attributes != null ? !attributes.equals(message.attributes) : message.attributes != null) {
+        	return false;
+        }
         return type == message.type;
 
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         int result;
         result = (type != null ? type.hashCode() : 0);
         result = 31 * result + subjects.hashCode();
         result = 31 * result + (thread != null ? thread.hashCode() : 0);
         result = 31 * result + (language != null ? language.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         result = 31 * result + bodies.hashCode();
         return result;
     }
@@ -542,7 +588,8 @@ public class Message extends Packet {
         }
 
 
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             final int prime = 31;
             int result = 1;
             result = prime * result + this.language.hashCode();
@@ -550,7 +597,8 @@ public class Message extends Packet {
             return result;
         }
 
-        public boolean equals(Object obj) {
+        @Override
+		public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -604,7 +652,8 @@ public class Message extends Packet {
             return message;
         }
 
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             final int prime = 31;
             int result = 1;
             result = prime * result + this.language.hashCode();
@@ -612,7 +661,8 @@ public class Message extends Packet {
             return result;
         }
 
-        public boolean equals(Object obj) {
+        @Override
+		public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }

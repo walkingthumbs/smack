@@ -73,11 +73,25 @@ public class PacketParserUtils {
      */
     public static Packet parseMessage(XmlPullParser parser) throws Exception {
         Message message = new Message();
-        String id = parser.getAttributeValue("", "id");
-        message.setPacketID(id == null ? Packet.ID_NOT_AVAILABLE : id);
-        message.setTo(parser.getAttributeValue("", "to"));
-        message.setFrom(parser.getAttributeValue("", "from"));
-        message.setType(Message.Type.fromString(parser.getAttributeValue("", "type")));
+        
+        int count = parser.getAttributeCount();
+        
+        for(int index = 0; index < count; index++) {
+        	String name = parser.getAttributeName(index);
+        	String value = parser.getAttributeValue(index);
+        	if(name.equals("id")) {
+        		message.setPacketID(value == null ? Packet.ID_NOT_AVAILABLE : value);
+        	} else if (name.equals("to")) {
+        		message.setTo(value);
+        	} else if (name.equals("from")) {
+        		message.setFrom(value);
+        	} else if (name.equals("type")) {
+        		message.setType(Message.Type.fromString(value));
+        	} else {
+        		message.addAttribute(name, value);
+        	}
+        }
+        
         String language = getLanguageAttribute(parser);
         
         // determine message's default language
