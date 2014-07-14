@@ -373,7 +373,7 @@ class PacketReader {
                 }
                 else if (parser.getName().equals("bind")) {
                     // The server requires the client to bind a resource to the stream
-                    connection.getSASLAuthentication().bindingRequired();
+                    connection.getSASLAuthentication().serverRequiresBinding();
                 }
                 else if(parser.getName().equals("ver")){
                 	connection.getConfiguration().setRosterVersioningAvailable(true);

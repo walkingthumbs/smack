@@ -151,7 +151,7 @@ public class BOSHPacketReader implements BOSHClientResponseListener {
                 } else if (parser.getName().equals("bind")) {
                     // The server requires the client to bind a resource to the
                     // stream
-                    connection.getSASLAuthentication().bindingRequired();
+                    connection.getSASLAuthentication().serverRequiresBinding();
                 } else if (parser.getName().equals("session")) {
                     // The server supports sessions
                     connection.getSASLAuthentication().sessionsSupported();

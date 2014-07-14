@@ -20,6 +20,8 @@
 
 package org.jivesoftware.smack;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.packet.Bind;
 import org.jivesoftware.smack.packet.IQ;
@@ -78,8 +80,15 @@ public class SASLAuthentication implements UserAuthentication {
      * the connection.
      */
     private boolean saslFailed;
-    private boolean resourceBinded;
     private boolean sessionSupported;
+    /**
+     * Set to true if the server requires the connection to be binded in order to continue.
+     * <p>
+     * Note that we use AtomicBoolean here because it allows us to set the Boolean *object*, which
+     * we also use as synchronization object. A plain non-atomic Boolean object would be newly created
+     * for every change of the boolean value, which makes it useless as object for wait()/notify().
+     */
+    private AtomicBoolean bindingRequired = new AtomicBoolean(false);
     /**
      * The SASL related error condition if there was one provided by the server.
      */
@@ -422,20 +431,19 @@ public class SASLAuthentication implements UserAuthentication {
 
     private String bindResourceAndEstablishSession(String resource) throws XMPPException {
         // Wait until server sends response containing the <bind> element
-        synchronized (this) {
-            if (!resourceBinded) {
+        synchronized (bindingRequired) {
+            if (!bindingRequired.get()) {
                 try {
-                    wait(30000);
+                    bindingRequired.wait(SmackConfiguration.getPacketReplyTimeout());
                 }
                 catch (InterruptedException e) {
                     // Ignore
                 }
+                if (!bindingRequired.get()) {
+                    // Server never offered resource binding
+                    throw new XMPPException("Resource binding not offered by server");
+                }
             }
-        }
-
-        if (!resourceBinded) {
-            // Server never offered resource binding
-            throw new XMPPException("Resource binding not offered by server");
         }
 
         Bind bindResource = new Bind();
@@ -551,11 +559,10 @@ public class SASLAuthentication implements UserAuthentication {
      * Notification message saying that the server requires the client to bind a
      * resource to the stream.
      */
-    void bindingRequired() {
-        synchronized (this) {
-            resourceBinded = true;
-            // Wake up the thread that is waiting in the #authenticate method
-            notify();
+    void serverRequiresBinding() {
+        synchronized (bindingRequired) {
+            bindingRequired.set(true);
+            bindingRequired.notify();
         }
     }
 
@@ -580,7 +587,7 @@ public class SASLAuthentication implements UserAuthentication {
     protected void init() {
         saslNegotiated = false;
         saslFailed = false;
-        resourceBinded = false;
         sessionSupported = false;
+        bindingRequired.set(false);
     }
 }
