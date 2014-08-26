@@ -51,6 +51,7 @@ public class Message extends Packet {
     private String thread = null;
     private String language;
 
+    private final Map<String, String> attributes = new HashMap<String, String>();
     private final Set<Subject> subjects = new HashSet<Subject>();
     private final Set<Body> bodies = new HashSet<Body>();
 
@@ -104,6 +105,28 @@ public class Message extends Packet {
             throw new IllegalArgumentException("Type cannot be null.");
         }
         this.type = type;
+    }
+
+    /**
+     * Returns the value of the given name, or null if the name is not an attribute.
+     * @param name
+     * @return the given name, or null if the name is not an attribute.
+     */
+    public String getAttributeValue(String name) {
+    	return attributes.get(name);
+    }
+
+    /**
+     * Returns the attributes that are a part of the message element.
+     *
+     * @return the attribute map of the message element.
+     */
+    public Map<String, String> getAttributes() {
+		return attributes;
+	}
+
+    public void addAttribute(String name, String value) {
+    	attributes.put(name, value);
     }
 
     /**
@@ -414,6 +437,9 @@ public class Message extends Packet {
         if (type != Type.normal) {
             buf.attribute("type", type);
         }
+        for(String name : attributes.keySet()) {
+        	buf.append(" " + name + "=\"").append(attributes.get(name)).append("\"");
+        }
         buf.rightAngelBracket();
 
         // Add the subject in the default language
@@ -478,6 +504,9 @@ public class Message extends Packet {
         if (thread != null ? !thread.equals(message.thread) : message.thread != null) {
             return false;
         }
+        if(attributes != null ? !attributes.equals(message.attributes) : message.attributes != null) {
+        	return false;
+        }
         return type == message.type;
 
     }
@@ -488,6 +517,7 @@ public class Message extends Packet {
         result = 31 * result + subjects.hashCode();
         result = 31 * result + (thread != null ? thread.hashCode() : 0);
         result = 31 * result + (language != null ? language.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         result = 31 * result + bodies.hashCode();
         return result;
     }
