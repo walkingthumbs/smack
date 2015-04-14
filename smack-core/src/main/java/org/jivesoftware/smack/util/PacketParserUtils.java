@@ -221,12 +221,25 @@ public class PacketParserUtils {
 
         final int initialDepth = parser.getDepth();
         Message message = new Message();
-        message.setStanzaId(parser.getAttributeValue("", "id"));
-        message.setTo(parser.getAttributeValue("", "to"));
-        message.setFrom(parser.getAttributeValue("", "from"));
-        String typeString = parser.getAttributeValue("", "type");
-        if (typeString != null) {
-            message.setType(Message.Type.fromString(typeString));
+
+        int count = parser.getAttributeCount();
+
+        for(int index = 0; index < count; index++) {
+            String name = parser.getAttributeName(index);
+            String value = parser.getAttributeValue(index);
+            if(name.equals("id")) {
+                message.setStanzaId(value);
+            } else if (name.equals("to")) {
+                message.setTo(value);
+            } else if (name.equals("from")) {
+                message.setFrom(value);
+            } else if (name.equals("type")) {
+                if (value != null) {
+                    message.setType(Message.Type.fromString(value));
+                }
+            } else {
+                message.addAttribute(name, value);
+            }
         }
         String language = getLanguageAttribute(parser);
         

@@ -19,6 +19,7 @@ package org.jivesoftware.smack.packet;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +60,7 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
     private Type type;
     private String thread = null;
 
+    private final Map<String, String> attributes = new HashMap<String, String>();
     private final Set<Subject> subjects = new HashSet<Subject>();
     private final Set<Body> bodies = new HashSet<Body>();
 
@@ -136,6 +138,28 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
      */
     public void setType(Type type) {
         this.type = type;
+    }
+
+    /**
+     * Returns the value of the given name, or null if the name is not an attribute.
+     * @param name
+     * @return the given name, or null if the name is not an attribute.
+     */
+    public String getAttributeValue(String name) {
+        return attributes.get(name);
+    }
+    
+    /**
+     * Returns the attributes that are a part of the message element.
+     *
+     * @return the attribute map of the message element.
+     */
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    
+    public void addAttribute(String name, String value) {
+        attributes.put(name, value);
     }
 
     /**
@@ -422,6 +446,9 @@ public final class Message extends Stanza implements TypedCloneable<Message> {
         buf.halfOpenElement(ELEMENT);
         addCommonAttributes(buf);
         buf.optAttribute("type", type);
+        for(String name : attributes.keySet()) {
+            buf.attribute(name, attributes.get(name));
+        }
         buf.rightAngleBracket();
 
         // Add the subject in the default language
