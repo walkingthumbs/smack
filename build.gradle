@@ -326,11 +326,13 @@ def getAndroidJavadocOffline() {
 }
 
 def getAndroidHome() {
-	def androidHomeEnv = System.getenv("ANDROID_HOME")
-	if (androidHomeEnv == null) {
-		throw new Exception("ANDROID_HOME environment variable is not set")
+	def Properties localProperties = new Properties();
+	localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+	def sdkdir = localProperties.getProperty('sdk.dir')
+	if (sdkdir == null) {
+		throw new Exception("sdk.dir is not set")
 	}
-	def androidHome = new File(androidHomeEnv)
-	if (!androidHome.isDirectory()) throw new Exception("Environment variable ANDROID_HOME is not pointing to a directory")
+	def androidHome = new File(sdkdir)
+	if (!androidHome.isDirectory()) throw new Exception("sdk.dir is not pointing to a directory")
 	return androidHome
 }

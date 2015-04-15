@@ -10,6 +10,7 @@
 .settings
 .gradle
 gradle.properties
+local.properties
 
 build/
 core/build/
