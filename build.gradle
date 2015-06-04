@@ -25,7 +25,7 @@ allprojects {
 		releasedocsDir = new File(buildDir, 'releasedocs')
 		rootConfigDir = new File(rootDir, 'config')
 		sonatypeCredentialsAvailable = project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')
-		isReleaseVersion = !isSnapshot
+		isReleaseVersion = !isSnapshot && !isWtCustom
 		signingRequired = isReleaseVersion
 		sonatypeSnapshotUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
 		sonatypeStagingUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
@@ -53,6 +53,9 @@ allprojects {
 	version = shortVersion
 	if (isSnapshot) {
 		version += '-SNAPSHOT'
+	}
+	if (isWtCustom) {
+		version += '-WTCUSTOM'
 	}
 
 	ext.sharedManifest = manifest {
@@ -152,7 +155,7 @@ task distributionZip(type: Zip, dependsOn: [javadocAll, prepareReleasedocs, mark
 
 task maybeCheckForSnapshotDependencies {
 	// Don't check for Snapshot dependencies if this is a snapshot.
-	if (isSnapshot) return
+	if (isSnapshot || isWtCustom) return
 	allprojects { project ->
 		project.configurations.runtime.each {
 			if (it.toString().contains("-SNAPSHOT"))
